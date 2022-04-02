@@ -7,10 +7,23 @@
     align-items: center;
     justify-content: center;
 }
+
+
+.current-player{
+    size: 2em;
+    font-weight: bold;
+    padding: 10px;
+    margin: 10px;
+    border: 1px solid gray;
+    border-radius: 3px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
 .canvas-container{
     border: 2px solid blue;
 
 }
+
 .canvas{
     // border: 1px solid red;
     // width: 768px;

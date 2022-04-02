@@ -1,5 +1,8 @@
 <div class="game-board-root">
+    <div class="current-player" >
+        {{ currentPlayer.name }} 's turn
+    </div>
     <div class="canvas-container">
-        <canvas #gameboard class="canvas" id="canvas" width=768 height=768 (click)="onClickCanvas($event)">hello</canvas>
+        <canvas #gameboard class="canvas" id="canvas" width=768 height=768 (click)="onClickCanvas($event)" (mousemove)="onMouseMove($event)">hello</canvas>
     </div>
 </div>
