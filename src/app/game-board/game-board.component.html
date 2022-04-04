@@ -1,7 +1,20 @@
 <div class="game-board-root">
-    <div class="current-player" >
-        {{ currentPlayer.name }} 's turn
+    <div class="left-column">
+        <div class="current-player" [ngStyle]="currentPlayerNgStyle">
+            {{ currentPlayer.name }} 's turn
+        </div>
+        <div class="player-swatches">
+            <div *ngFor="let player of players">
+                <div *ngFor="let color of player.colorSwatch">
+                    <div style="height:20px; width:20px;" [style.backgroundColor]="color">
+                        {{ player.colorSwatch.indexOf(color) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
+
     <div class="canvas-container">
         <canvas #gameboard class="canvas" id="canvas" width=768 height=768 (click)="onClickCanvas($event)" (mousemove)="onMouseMove($event)">hello</canvas>
     </div>
