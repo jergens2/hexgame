@@ -5,6 +5,7 @@ import { HexagonTile } from './hexagon-tile.class';
 import { Square } from './square.class';
 import { XYCoordinates } from './xy-coordinates.class';
 import * as DateTime from 'luxon';
+import { GameConfiguration } from './game-configuration.class';
 
 @Component({
   selector: 'app-game-board',
@@ -15,34 +16,40 @@ export class GameBoardComponent implements OnInit {
 
   constructor() {
   }
-
-
-  private readonly canvasWidth = 768;
-  private readonly canvasHeight = 768;
-
-  public get currentPlayer(): GamePlayer { return this._gameBoard.currentPlayer }
-  public get players(): GamePlayer[] { return this._gameBoard.players; }
-
   private _gameBoard: GameBoard = {} as GameBoard;
-
   private _currentPlayerNgStyle: any = {};
-  public get currentPlayerNgStyle(): any { return this._currentPlayerNgStyle; }
+  private _canvasContext: CanvasRenderingContext2D = {} as CanvasRenderingContext2D;
 
   @ViewChild('gameboard', { static: true }) private canvas: ElementRef = {} as ElementRef;
 
-  private ctx: CanvasRenderingContext2D = {} as CanvasRenderingContext2D;
+  public get currentPlayer(): GamePlayer { return this._gameBoard.currentPlayer }
+  public get players(): GamePlayer[] { return this._gameBoard.players; }
+  public get currentPlayerNgStyle(): any { return this._currentPlayerNgStyle; }
+  public get canvasWidth(): number { return this._gameBoard.canvasWidth}
+  public get canvasHeight(): number { return this._gameBoard.canvasHeight}
+
+
 
   ngOnInit(): void {
     const context = this.canvas.nativeElement.getContext('2d');
     if (context) {
-      this.ctx = context;
+      this._canvasContext = context;
       this._gameBoard = this._buildGameBoard();
       this.drawGameBoard();
     }
   }
 
+  /** Set configurations here */
   private _buildGameBoard(): GameBoard {
-    return new GameBoard(this.canvasWidth, this.canvasHeight, 6);
+    const playerCount: number = 6;
+    const canvasWidth: number = 768;
+    const canvasHeight: number = 768;
+    const tileRadius: number = 10;
+    const tileBuffer: number = 2;
+    const tileDisabledRate: number = 0.1;
+    const tilePoweredCount: number = (2*playerCount)+1;
+    const configuration = new GameConfiguration(playerCount, canvasWidth, canvasHeight, tileRadius, tileBuffer, tileDisabledRate, tilePoweredCount)
+    return new GameBoard(configuration);
   }
 
   public onClickCanvas($event: MouseEvent) {
@@ -58,22 +65,17 @@ export class GameBoardComponent implements OnInit {
     this.drawGameBoard();
     const end = DateTime.DateTime.now();
     const ms = end.diff(start, 'milliseconds');
-    console.log(" milliseconds: " + ms);
   }
 
-  // private _drawCount = 0;
   /**
    * Every time drawGameBoard() is called, we clear the image and redraw each tile.
    */
   public drawGameBoard() {
-    // this._drawCount++;
-    // if(this._drawCount % 100 === 0){
-    //   console.log("Draw Count: " + this._drawCount);
-    // }
+    this.clearBoard();
     this._currentPlayerNgStyle = {
       'background-color': this.currentPlayer.baseColor,
     }
-    this.clearBoard();
+
     this._gameBoard.tiles.forEach(tile => {
       this.drawTile(tile, true, false);
       // if (tile.centerPoint === this._gameBoard.mouseOverTile?.centerPoint) {
@@ -97,53 +99,46 @@ export class GameBoardComponent implements OnInit {
 
 
   public clearBoard(): void {
-    this.ctx.save();
-    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+    this._canvasContext.save();
+    this._canvasContext.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
   }
 
   private drawTile(tile: HexagonTile, doFill: boolean, doStroke: boolean): void {
-
-
-    this.ctx.beginPath();
-    this.ctx.moveTo(tile.point0.x, tile.point0.y);
-    this.ctx.lineTo(tile.point1.x, tile.point1.y);
-    this.ctx.lineTo(tile.point2.x, tile.point2.y);
-    this.ctx.lineTo(tile.point3.x, tile.point3.y);
-    this.ctx.lineTo(tile.point4.x, tile.point4.y);
-    this.ctx.lineTo(tile.point5.x, tile.point5.y);
-    this.ctx.lineTo(tile.point0.x, tile.point0.y);
-
-    this.ctx.fillStyle = tile.fillColor;
-    this.ctx.fill();
-
+    this._canvasContext.beginPath();
+    this._canvasContext.moveTo(tile.point0.x, tile.point0.y);
+    this._canvasContext.lineTo(tile.point1.x, tile.point1.y);
+    this._canvasContext.lineTo(tile.point2.x, tile.point2.y);
+    this._canvasContext.lineTo(tile.point3.x, tile.point3.y);
+    this._canvasContext.lineTo(tile.point4.x, tile.point4.y);
+    this._canvasContext.lineTo(tile.point5.x, tile.point5.y);
+    this._canvasContext.lineTo(tile.point0.x, tile.point0.y);
+    this._canvasContext.fillStyle = tile.fillColor;
+    this._canvasContext.fill();
     doStroke = true;
     if (doStroke) {
-      if(tile.isOwned){
-        this.ctx.strokeStyle = tile.tileOwner.colorSwatch[4];
-        this.ctx.lineWidth = 1;
-        if(tile.powerLevel >= 5){
-          this.ctx.lineWidth = 2;
+      if (tile.isOwned) {
+        this._canvasContext.strokeStyle = tile.tileOwner.colorSwatch[4];
+        this._canvasContext.lineWidth = 1;
+        if (tile.powerLevel >= 5) {
+          this._canvasContext.lineWidth = 2;
         }
-        this.ctx.stroke();
-      }else{
-        this.ctx.strokeStyle = 'rgb(210,210,210)';
-        this.ctx.lineWidth = 1;
-        this.ctx.stroke();
+        this._canvasContext.stroke();
+      } else {
+        this._canvasContext.strokeStyle = 'rgb(210,210,210)';
+        this._canvasContext.lineWidth = 1;
+        this._canvasContext.stroke();
       }
-
     }
-
-
-    this.ctx.fillStyle = 'black';
-    if(tile.powerLevel >= 5){
-      this.ctx.fillStyle = 'rgb(130,130,130)';
+    this._canvasContext.fillStyle = 'black';
+    if (tile.powerLevel >= 5) {
+      this._canvasContext.fillStyle = 'rgb(130,130,130)';
     }
-    if(tile.powerLevel >= 7){
-      this.ctx.fillStyle = 'rgb(250,250,250)';
+    if (tile.powerLevel >= 7) {
+      this._canvasContext.fillStyle = 'rgb(250,250,250)';
     }
-    this.ctx.font = "8px Arial";
-    this.ctx.textAlign = 'center';
-    this.ctx.textBaseline = 'middle';
+    this._canvasContext.font = "8px Arial";
+    this._canvasContext.textAlign = 'center';
+    this._canvasContext.textBaseline = 'middle';
     let power: number = Math.floor(tile.powerLevel);
     let powerValue: string = '';
     if (power >= 1) {
@@ -151,6 +146,6 @@ export class GameBoardComponent implements OnInit {
     }
     let x = tile.centerPoint.x;
     let y = tile.centerPoint.y;
-    this.ctx.fillText(powerValue, x, y);
+    this._canvasContext.fillText(powerValue, x, y);
   }
 }

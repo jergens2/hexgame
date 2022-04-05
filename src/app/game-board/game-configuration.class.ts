@@ -6,21 +6,32 @@ export class GameConfiguration {
     private _currentPlayer: GamePlayer;
     private _currentTurn: number = 1;
 
+    private _canvasWidth: number;
+    private _canvasHeight: number;
+    private _tileRadius: number;
+    private _tileBuffer: number;
+    private _tileDisabledRate: number;
+    private _tilePoweredCount: number;
+
     public get playerCount(): number { return this._players.length; }
     public get players(): GamePlayer[] { return this._players; }
-
     public get currentPlayer(): GamePlayer { return this._currentPlayer; }
-    public get currentTurn(): number { return this._currentTurn;}
+    public get currentTurn(): number { return this._currentTurn; }
+    public get canvasWidth(): number { return this._canvasWidth; }
+    public get canvasHeight(): number { return this._canvasHeight; }
+    public get tileRadius(): number { return this._tileRadius; }
+    public get tileBuffer(): number { return this._tileBuffer; }
+    public get tileDisabledRate(): number { return this._tileDisabledRate; }
+    public get tilePoweredCount(): number { return this._tilePoweredCount; }
 
-
-
-
-    constructor(playerCount?: number) {
-        if (playerCount) {
-            this._buildPlayers(playerCount);
-        } else {
-            this._buildPlayers(2);
-        }
+    constructor(playerCount: number, canvasWidth: number, canvasHeight: number, tileRadius: number, tileBuffer: number, tileDisabledRate: number, tilePoweredCount: number) {
+        this._buildPlayers(playerCount);
+        this._canvasWidth = canvasWidth;
+        this._canvasHeight = canvasHeight;
+        this._tileRadius = tileRadius;
+        this._tileBuffer = tileBuffer;
+        this._tileDisabledRate = tileDisabledRate; 
+        this._tilePoweredCount = tilePoweredCount;
         this._currentPlayer = this._players[0];
     }
 
@@ -37,7 +48,7 @@ export class GameConfiguration {
         if (playerCount === 2) {
             const randomIndex = Math.floor(Math.random() * (this._sampleStartingColors.length));
             let secondIndex = Math.floor(Math.random() * (this._sampleStartingColors.length));
-            while(secondIndex === randomIndex){
+            while (secondIndex === randomIndex) {
                 secondIndex = Math.floor(Math.random() * (this._sampleStartingColors.length));
             }
             const color1: string = this._sampleStartingColors[randomIndex];
@@ -45,47 +56,26 @@ export class GameConfiguration {
             this._players.push(new GamePlayer(color1, 'Player 1'));
             this._players.push(new GamePlayer(color2, 'Player 2'));
         } else {
-            
-            if(playerCount <= this._sampleStartingColors.length){
+            if (playerCount <= this._sampleStartingColors.length) {
                 const randomIndex = Math.floor(Math.random() * (this._sampleStartingColors.length));
                 let currentIndex = randomIndex;
                 for (let i = 1; i <= playerCount; i++) {
                     const name = "Player " + i;
                     const color: string = this._sampleStartingColors[currentIndex];
                     const newPlayer = new GamePlayer(color, name);
-                    this._players.push(newPlayer);  
+                    this._players.push(newPlayer);
                     currentIndex++;
-                    if(currentIndex === this._sampleStartingColors.length){
+                    if (currentIndex === this._sampleStartingColors.length) {
                         currentIndex = 0;
                     }
                 }
-            }else{
+            } else {
                 console.log("Error:  too many players")
             }
-            
         }
-
     }
 
-    private _generateRandomColor(): string {
-        const lightness: number = 25; 
-        const max = 245;  // closer to 255 make it lighter;
-        const min: number = max - lightness;
-        const r = Math.floor(Math.random() * (max - min + 1) + min);
-        const g = Math.floor(Math.random() * (max - min + 1) + min);
-        const b = Math.floor(Math.random() * (max - min + 1) + min);
-        console.log('rgb(' + r + ', ' + g + ', ' + b + ')')
-        return 'rgb(' + r + ', ' + g + ', ' + b + ')';
-    }
 
-        /**
-    rgb(204, 255, 204) = 663 / 768 = .86
-    rgb(255, 255, 204) = 714 / 768 = .93
-    rgb(255, 204, 204) = 663 / 768 = .86
-    rgb(255, 204, 255) = 714 / 768 = .93
-    rgb(204, 204, 255) = 663 / 768 = .86
-    rgb(204, 255, 255) = 714 / 768 = .93
-     */
     private _sampleStartingColors: string[] = [
         'rgb(204, 255, 204)',
         'rgb(255, 255, 204)',

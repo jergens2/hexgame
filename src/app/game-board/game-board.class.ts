@@ -7,31 +7,22 @@ export class GameBoard {
 
 
     private _tiles: HexagonTile[] = [];
-    private _canvasWidth: number;
-    private _canvasHeight: number;
     private _configuration: GameConfiguration;
-
     private _mouseOverTile: HexagonTile | null = null;
 
-    public readonly radius: number = 10;
-    public readonly buffer: number = 2;
-
-    public get canvasWidth(): number { return this._canvasWidth; }
-    public get canvasHeight(): number { return this._canvasHeight; }
+    public get canvasWidth(): number { return this._configuration.canvasWidth; }
+    public get canvasHeight(): number { return this._configuration.canvasHeight; }
     public get tiles(): HexagonTile[] { return this._tiles; }
     public get playerCount(): number { return this._configuration.playerCount; }
     public get players(): GamePlayer[] { return this._configuration.players; }
     public get currentPlayer(): GamePlayer { return this._configuration.currentPlayer; }
+    public get tileRadius(): number { return this._configuration.tileRadius; }
+    public get tileBuffer(): number { return this._configuration.tileBuffer; }
 
     public get mouseOverTile(): HexagonTile | null { return this._mouseOverTile; }
 
-    constructor(canvasWidth: number, canvasHeight: number, playerCount?: number) {
-        this._canvasWidth = canvasWidth;
-        this._canvasHeight = canvasHeight;
-        if (!playerCount) {
-            playerCount = 2;
-        }
-        this._configuration = new GameConfiguration(playerCount);
+    constructor(configuration: GameConfiguration) {
+        this._configuration = configuration;
         this._buildTiles();
     }
 
@@ -122,9 +113,9 @@ export class GameBoard {
     }
 
     private _buildTiles(): void {
-        const effectiveRadius = this.radius + this.buffer;
-        const halfHeight = Math.sqrt(Math.abs(((this.radius / 2) ** 2) - (this.radius ** 2))) + (this.buffer / 2);
-        const effectiveHeight = (halfHeight * 2) + this.buffer;
+        const effectiveRadius = this.tileRadius + this.tileBuffer;
+        const halfHeight = Math.sqrt(Math.abs(((this.tileRadius / 2) ** 2) - (this.tileRadius ** 2))) + (this.tileBuffer / 2);
+        const effectiveHeight = (halfHeight * 2) + this.tileBuffer;
         // in the horizontal configuration, the first column is width of 2*radius and each subsequent column adds an additional width of 1.5 * radius
         // every second column will have minus one height, unless there is additional space at the end.
         let columnsHaveSameHeight: boolean = false;
@@ -157,16 +148,16 @@ export class GameBoard {
                     //if it is an even column
                     let startX = offsetX + effectiveRadius + (column * additionalColWidth);
                     let startY = offsetY + effectiveHeight / 2 + (effectiveHeight * row);
-                    tiles.push(new HexagonTile(startX, startY, this.radius, column, row));
+                    tiles.push(new HexagonTile(startX, startY, this.tileRadius, column, row));
                 } else {
                     //if it is an odd column
                     let startX = offsetX + (effectiveRadius * 2) + (column * additionalColWidth) - effectiveRadius;
                     let startY = offsetY + effectiveHeight + (effectiveHeight * row);
                     if (columnsHaveSameHeight) {
-                        tiles.push(new HexagonTile(startX, startY, this.radius, column, row));
+                        tiles.push(new HexagonTile(startX, startY, this.tileRadius, column, row));
                     } else {
                         if (row != rowCount - 1) {
-                            tiles.push(new HexagonTile(startX, startY, this.radius, column, row));
+                            tiles.push(new HexagonTile(startX, startY, this.tileRadius, column, row));
                         }
                     }
                 }
