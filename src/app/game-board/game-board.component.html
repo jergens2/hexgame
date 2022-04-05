@@ -6,7 +6,7 @@
         <div class="player-swatches">
             <div *ngFor="let player of players">
                 <div *ngFor="let color of player.colorSwatch">
-                    <div style="height:20px; width:20px;" [style.backgroundColor]="color">
+                    <div style="height:20px; width:20px; font-size: 0.8em;" [style.backgroundColor]="color">
                         {{ player.colorSwatch.indexOf(color) }}
                     </div>
                 </div>

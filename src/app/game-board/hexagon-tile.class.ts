@@ -26,12 +26,19 @@ export class HexagonTile {
     private _point4: XYCoordinates;
     private _point5: XYCoordinates;
 
-    private _neighbour0: XYCoordinates;
-    private _neighbour1: XYCoordinates;
-    private _neighbour2: XYCoordinates;
-    private _neighbour3: XYCoordinates;
-    private _neighbour4: XYCoordinates;
-    private _neighbour5: XYCoordinates;
+    private _neighbour0Coord: XYCoordinates;
+    private _neighbour1Coord: XYCoordinates;
+    private _neighbour2Coord: XYCoordinates;
+    private _neighbour3Coord: XYCoordinates;
+    private _neighbour4Coord: XYCoordinates;
+    private _neighbour5Coord: XYCoordinates;
+
+    private _neighbour0: HexagonTile | null = null;
+    private _neighbour1: HexagonTile | null = null;
+    private _neighbour2: HexagonTile | null = null;
+    private _neighbour3: HexagonTile | null = null;
+    private _neighbour4: HexagonTile | null = null;
+    private _neighbour5: HexagonTile | null = null;
 
     private _centerPoint: XYCoordinates;
 
@@ -66,14 +73,29 @@ export class HexagonTile {
     public get point4(): XYCoordinates { return this._point4; }
     public get point5(): XYCoordinates { return this._point5; }
 
-    public get neighbour0(): XYCoordinates { return this._neighbour0; }
-    public get neighbour1(): XYCoordinates { return this._neighbour1; }
-    public get neighbour2(): XYCoordinates { return this._neighbour2; }
-    public get neighbour3(): XYCoordinates { return this._neighbour3; }
-    public get neighbour4(): XYCoordinates { return this._neighbour4; }
-    public get neighbour5(): XYCoordinates { return this._neighbour5; }
-
-    public get neighbours(): XYCoordinates[] {
+    public get neighbour0Coords(): XYCoordinates { return this._neighbour0Coord; }
+    public get neighbour1Coords(): XYCoordinates { return this._neighbour1Coord; }
+    public get neighbour2Coords(): XYCoordinates { return this._neighbour2Coord; }
+    public get neighbour3Coords(): XYCoordinates { return this._neighbour3Coord; }
+    public get neighbour4Coords(): XYCoordinates { return this._neighbour4Coord; }
+    public get neighbour5Coords(): XYCoordinates { return this._neighbour5Coord; }  
+    public get neighbour0(): HexagonTile | null { return this._neighbour0; }
+    public get neighbour1(): HexagonTile | null { return this._neighbour1; }
+    public get neighbour2(): HexagonTile | null { return this._neighbour2; }
+    public get neighbour3(): HexagonTile | null { return this._neighbour3; }
+    public get neighbour4(): HexagonTile | null { return this._neighbour4; }
+    public get neighbour5(): HexagonTile | null { return this._neighbour5; }
+    public get neighbourCoords(): XYCoordinates[] {
+        return [
+            this.neighbour0Coords,
+            this.neighbour1Coords,
+            this.neighbour2Coords,
+            this.neighbour3Coords,
+            this.neighbour4Coords,
+            this.neighbour5Coords,
+        ];
+    }
+    public get neighbours(): (HexagonTile | null)[] { 
         return [
             this.neighbour0,
             this.neighbour1,
@@ -82,21 +104,6 @@ export class HexagonTile {
             this.neighbour4,
             this.neighbour5,
         ];
-    }
-
-    public get randomizedNeighbours(): XYCoordinates[] {
-        let indexes: number[] = [];
-        this.neighbours.forEach(n => indexes.push(this.neighbours.indexOf(n)));
-        let randomizedIndexes: number[] = [];
-        while(indexes.length > 0){
-            let randomIndex = Math.floor(Math.random() * (indexes.length));
-            randomizedIndexes.push((indexes.splice(randomIndex, 1))[0]);
-        }
-        let randomizedNeighbours: XYCoordinates[] = [];
-        randomizedIndexes.forEach(index =>{ 
-            randomizedNeighbours.push(this.neighbours[index]);
-        });
-        return randomizedNeighbours;
     }
 
     public get centerPoint(): XYCoordinates { return this._centerPoint; }
@@ -135,18 +142,18 @@ export class HexagonTile {
         currentY = centerY - halfHeight;
         this._point5 = { x: currentX, y: currentY };
 
-        this._neighbour0 = { x: hexCol, y: hexRow - 1 };
-        this._neighbour1 = { x: hexCol + 1, y: hexRow};
-        this._neighbour2 = { x: hexCol + 1, y: hexRow + 1 };
-        this._neighbour3 = { x: hexCol, y: hexRow + 1 };
-        this._neighbour4 = { x: hexCol - 1, y: hexRow + 1 };
-        this._neighbour5 = { x: hexCol - 1, y: hexRow };
+        this._neighbour0Coord = { x: hexCol, y: hexRow - 1 };
+        this._neighbour1Coord = { x: hexCol + 1, y: hexRow};
+        this._neighbour2Coord = { x: hexCol + 1, y: hexRow + 1 };
+        this._neighbour3Coord = { x: hexCol, y: hexRow + 1 };
+        this._neighbour4Coord = { x: hexCol - 1, y: hexRow + 1 };
+        this._neighbour5Coord = { x: hexCol - 1, y: hexRow };
 
         if(hexCol%2 ==0){
-            this._neighbour1 = { x: hexCol + 1, y: hexRow-1};
-            this._neighbour2 = { x: hexCol + 1, y: hexRow };
-            this._neighbour4 = { x: hexCol - 1, y: hexRow };
-            this._neighbour5 = { x: hexCol - 1, y: hexRow-1 };
+            this._neighbour1Coord = { x: hexCol + 1, y: hexRow-1};
+            this._neighbour2Coord = { x: hexCol + 1, y: hexRow };
+            this._neighbour4Coord = { x: hexCol - 1, y: hexRow };
+            this._neighbour5Coord = { x: hexCol - 1, y: hexRow-1 };
         }
 
         this._tileState = {
@@ -164,6 +171,7 @@ export class HexagonTile {
         if(this.isNeutral){
             this._tileState.ownedBy = player;
             this._tileState.powerValue = 1;
+            this._tileState.isNeutral = false;
             this._fillColor = player.baseColor;
         }else{
             if(this.tileOwner === player){
@@ -212,6 +220,14 @@ export class HexagonTile {
 
     }
 
+    public setNeighbours(neighbours: HexagonTile[]){
+        this._neighbour0 = neighbours[0];
+        this._neighbour1 = neighbours[1];
+        this._neighbour2 = neighbours[2];
+        this._neighbour3 = neighbours[3];
+        this._neighbour4 = neighbours[4];
+        this._neighbour5 = neighbours[5];
+    }
 
     public getDistanceTo(point: XYCoordinates): XYCoordinates {
         let diff: XYCoordinates = {

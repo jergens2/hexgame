@@ -30,10 +30,7 @@ export class GamePlayer{
             const color = ColorCalculator.calculateColor(this._baseColor, i)
             swatch.push(color);
         }
-        console.log(swatch)
         this._colorSwatch = swatch;
     }
-
-
 
 }

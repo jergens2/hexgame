@@ -40,8 +40,8 @@ export class ColorCalculator {
         if(powerLevel > maxPowerLevel){
             powerLevel = maxPowerLevel;
         }
-        const dominantColorDecrease: number = maxValue / halfPoint;
-        const nonDominantColorDecrease: number = nonDominantMaxValue / (maxPowerLevel-halfPoint);
+        const dominantColorDecrease: number = maxValue / (halfPoint+2);
+        const nonDominantColorDecrease: number = nonDominantMaxValue / ((maxPowerLevel-halfPoint)+2);
         for(let i=0; i<powerLevel; i++){
             if(i < halfPoint){
                 values.forEach(value => {

@@ -4,6 +4,7 @@ import { GamePlayer } from './game-player.class';
 import { HexagonTile } from './hexagon-tile.class';
 import { Square } from './square.class';
 import { XYCoordinates } from './xy-coordinates.class';
+import * as DateTime from 'luxon';
 
 @Component({
   selector: 'app-game-board',
@@ -41,7 +42,7 @@ export class GameBoardComponent implements OnInit {
   }
 
   private _buildGameBoard(): GameBoard {
-    return new GameBoard(this.canvasWidth, this.canvasHeight);
+    return new GameBoard(this.canvasWidth, this.canvasHeight, 6);
   }
 
   public onClickCanvas($event: MouseEvent) {
@@ -51,8 +52,13 @@ export class GameBoardComponent implements OnInit {
     const clickX = $event.clientX - canvasOriginX;
     const clickY = $event.clientY - canvasOriginY;
     const clickPoint: XYCoordinates = { x: clickX, y: clickY };
+
+    const start = DateTime.DateTime.now();
     this._gameBoard.clickBoard(clickPoint);
     this.drawGameBoard();
+    const end = DateTime.DateTime.now();
+    const ms = end.diff(start, 'milliseconds');
+    console.log(" milliseconds: " + ms);
   }
 
   // private _drawCount = 0;
@@ -113,8 +119,11 @@ export class GameBoardComponent implements OnInit {
     doStroke = true;
     if (doStroke) {
       if(tile.isOwned){
-        this.ctx.strokeStyle = tile.tileOwner.baseColor;
-        this.ctx.lineWidth = 2;
+        this.ctx.strokeStyle = tile.tileOwner.colorSwatch[4];
+        this.ctx.lineWidth = 1;
+        if(tile.powerLevel >= 5){
+          this.ctx.lineWidth = 2;
+        }
         this.ctx.stroke();
       }else{
         this.ctx.strokeStyle = 'rgb(210,210,210)';
@@ -126,6 +135,12 @@ export class GameBoardComponent implements OnInit {
 
 
     this.ctx.fillStyle = 'black';
+    if(tile.powerLevel >= 5){
+      this.ctx.fillStyle = 'rgb(130,130,130)';
+    }
+    if(tile.powerLevel >= 7){
+      this.ctx.fillStyle = 'rgb(250,250,250)';
+    }
     this.ctx.font = "8px Arial";
     this.ctx.textAlign = 'center';
     this.ctx.textBaseline = 'middle';

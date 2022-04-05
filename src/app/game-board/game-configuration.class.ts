@@ -4,11 +4,13 @@ export class GameConfiguration {
 
     private _players: GamePlayer[] = [];
     private _currentPlayer: GamePlayer;
+    private _currentTurn: number = 1;
 
     public get playerCount(): number { return this._players.length; }
     public get players(): GamePlayer[] { return this._players; }
 
     public get currentPlayer(): GamePlayer { return this._currentPlayer; }
+    public get currentTurn(): number { return this._currentTurn;}
 
 
 
@@ -28,6 +30,7 @@ export class GameConfiguration {
             newIndex = 0;
         }
         this._currentPlayer = this._players[newIndex];
+        this._currentTurn++;
     }
 
     private _buildPlayers(playerCount: number) {
@@ -37,21 +40,29 @@ export class GameConfiguration {
             while(secondIndex === randomIndex){
                 secondIndex = Math.floor(Math.random() * (this._sampleStartingColors.length));
             }
-
-            console.log(randomIndex, secondIndex, this._sampleStartingColors.length)
             const color1: string = this._sampleStartingColors[randomIndex];
             const color2: string = this._sampleStartingColors[secondIndex];
-            console.log(color1, color2);
             this._players.push(new GamePlayer(color1, 'Player 1'));
             this._players.push(new GamePlayer(color2, 'Player 2'));
         } else {
-            for (let i = 1; i <= playerCount; i++) {
-                const name = "Player " + i;
-
-                const color: string = this._generateRandomColor();
-                const newPlayer = new GamePlayer(color, name);
-                this._players.push(newPlayer);
+            
+            if(playerCount <= this._sampleStartingColors.length){
+                const randomIndex = Math.floor(Math.random() * (this._sampleStartingColors.length));
+                let currentIndex = randomIndex;
+                for (let i = 1; i <= playerCount; i++) {
+                    const name = "Player " + i;
+                    const color: string = this._sampleStartingColors[currentIndex];
+                    const newPlayer = new GamePlayer(color, name);
+                    this._players.push(newPlayer);  
+                    currentIndex++;
+                    if(currentIndex === this._sampleStartingColors.length){
+                        currentIndex = 0;
+                    }
+                }
+            }else{
+                console.log("Error:  too many players")
             }
+            
         }
 
     }

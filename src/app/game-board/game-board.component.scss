@@ -16,7 +16,11 @@
     margin-right: 10px;
     border-radius: 5px;
 }
-
+.player-swatches{
+    display:flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
 
 .current-player{
     size: 2em;

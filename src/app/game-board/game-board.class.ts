@@ -13,7 +13,7 @@ export class GameBoard {
 
     private _mouseOverTile: HexagonTile | null = null;
 
-    public readonly radius: number = 20;
+    public readonly radius: number = 10;
     public readonly buffer: number = 2;
 
     public get canvasWidth(): number { return this._canvasWidth; }
@@ -67,31 +67,6 @@ export class GameBoard {
 
     }
 
-    public findNeighbours(tile: HexagonTile): HexagonTile[] {
-        const neighbours: HexagonTile[] = [];
-        tile.neighbours.forEach(nCoord => {
-            const foundTile = this.tiles.find(tile => { return (tile.hexRow == nCoord.y && tile.hexCol == nCoord.x) });
-            if (foundTile) {
-                neighbours.push(foundTile);
-            }
-        });
-        return neighbours;
-    }
-    public findTile(xy: XYCoordinates): HexagonTile | null {
-        //this is ambiguous but xy actually refers to HexX and HexY, not regular linear coordinates
-        // todo: remove ambiguity
-        let foundTile = null;
-        if (xy) {
-            foundTile = this.tiles.find(tile => {
-                return tile.hexCol === xy.x && tile.hexRow === xy.y;
-            });
-            if (foundTile) {
-                return foundTile;
-            }
-        }
-
-        return null;
-    }
 
     public clickBoard(xy: XYCoordinates) {
         let closestTile: HexagonTile = this._tiles[0];
@@ -115,44 +90,38 @@ export class GameBoard {
 
     private _incrementTurn() {
         this._configuration.incrementTurn();
-        this._tiles.forEach(tile => tile.incrementTurn());
+        console.log("Current turn:  " + this._configuration.currentTurn)
+        // this._tiles.forEach(tile => tile.incrementTurn());
         this._tiles.forEach(tile => {
             tile.tileState.growthAccumulation += tile.growValue;
             let accumulatedGrowth = tile.growthAccumulation;
             if (accumulatedGrowth >= 1) {
-
-
                 let growCount = 0;
-                let randomizedNeighbours = tile.randomizedNeighbours.filter(n => {
-                    let foundTile = this.findTile(n);
-                    // if(foundTile !== null){
-                    return (foundTile?.tileOwner === tile.tileOwner) || tile.isNeutral;
-                    // }
-                });
-                for (let i = 0; i < Math.floor(accumulatedGrowth); i++) {
-                    let randomIndex = i;
-                    if (randomIndex >= randomizedNeighbours.length) {
-                        randomIndex = randomIndex % randomizedNeighbours.length;
+                let neighbours: HexagonTile[] = [];
+                tile.neighbours.forEach(n => {
+                    if (n !== null && n !== undefined) {
+                        neighbours.push(n);
                     }
-                    let randomTile = this.findTile(randomizedNeighbours[randomIndex]);
-                    if (randomTile) {
-                        let owner = tile.tileOwner;
-                        if (tile.isOwned) {
-                            randomTile.clickTile(owner);
+                })
+                // console.log("Neighbours: ", neighbours)
+                if (neighbours.length > 0) {
+                    neighbours = neighbours.filter(n => (n.isNeutral || n.tileOwner === tile.tileOwner));
+                    if (neighbours.length > 0) {
+                        for (let i = 0; i < Math.floor(accumulatedGrowth); i++) {
+                            let randomIndex = Math.floor(Math.random() * neighbours.length);
+                            // console.log("Random index, Neighbours.length", randomIndex, neighbours.length)
+                            neighbours[randomIndex].clickTile(tile.tileOwner);
+                            growCount++;
                         }
+                        accumulatedGrowth = accumulatedGrowth - growCount;
+                        tile.tileState.growthAccumulation = accumulatedGrowth;
                     }
-                    growCount++;
                 }
-                accumulatedGrowth = accumulatedGrowth - growCount;
-                tile.tileState.growthAccumulation = accumulatedGrowth;
             }
         });
     }
 
     private _buildTiles(): void {
-        // this.clearBoard();
-
-
         const effectiveRadius = this.radius + this.buffer;
         const halfHeight = Math.sqrt(Math.abs(((this.radius / 2) ** 2) - (this.radius ** 2))) + (this.buffer / 2);
         const effectiveHeight = (halfHeight * 2) + this.buffer;
@@ -204,7 +173,16 @@ export class GameBoard {
             }
         }
         this._tiles = tiles;
+        tiles.forEach(setTile => {
+            const neighbours: HexagonTile[] = [];
+            setTile.neighbourCoords.forEach(nCoord => {
+                const foundTile = this.tiles.find(allTile => { return (allTile.hexRow === nCoord.y && allTile.hexCol === nCoord.x) });
+                if (foundTile) {
+                    neighbours.push(foundTile);
+                }
+            });
+            setTile.setNeighbours(neighbours);
+        });
     }
-
 
 }
