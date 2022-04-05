@@ -4,8 +4,6 @@ import { HexagonTile } from "./hexagon-tile.class";
 import { XYCoordinates } from "./xy-coordinates.class";
 
 export class GameBoard {
-
-
     private _tiles: HexagonTile[] = [];
     private _configuration: GameConfiguration;
     private _mouseOverTile: HexagonTile | null = null;
@@ -18,12 +16,23 @@ export class GameBoard {
     public get currentPlayer(): GamePlayer { return this._configuration.currentPlayer; }
     public get tileRadius(): number { return this._configuration.tileRadius; }
     public get tileBuffer(): number { return this._configuration.tileBuffer; }
+    public get tileDisabledRate(): number { return this._configuration.tileDisabledRate; }
+    public get tilePoweredCount(): number { return this._configuration.tilePoweredCount; }
 
     public get mouseOverTile(): HexagonTile | null { return this._mouseOverTile; }
 
-    constructor(configuration: GameConfiguration) {
-        this._configuration = configuration;
+    constructor() {
+        const playerCount: number = 6;
+        const canvasWidth: number = 768;
+        const canvasHeight: number = 768;
+        const tileRadius: number = 10;
+        const tileBuffer: number = 2;
+        const tileDisabledRate: number = 0.05;
+        const tilePoweredCount: number = (2*playerCount)+1;
+        this._configuration = new GameConfiguration(playerCount, canvasWidth, canvasHeight, tileRadius, tileBuffer, tileDisabledRate, tilePoweredCount);
         this._buildTiles();
+        this._disableTiles();
+        this._setPowerTiles();
     }
 
     public incrementTurn() {
@@ -42,7 +51,6 @@ export class GameBoard {
                 closestTile = tile;
             }
         });
-
         let doDraw: boolean = true;
         if (this._mouseOverTile === null) {
             this._mouseOverTile = closestTile;
@@ -54,8 +62,6 @@ export class GameBoard {
         if (doDraw) {
             this._mouseOverTile = closestTile;
         }
-
-
     }
 
 
@@ -93,7 +99,7 @@ export class GameBoard {
                     if (n !== null && n !== undefined) {
                         neighbours.push(n);
                     }
-                })
+                });
                 // console.log("Neighbours: ", neighbours)
                 if (neighbours.length > 0) {
                     neighbours = neighbours.filter(n => (n.isNeutral || n.tileOwner === tile.tileOwner));
@@ -176,4 +182,21 @@ export class GameBoard {
         });
     }
 
+    private _disableTiles(){
+        let disableCount: number = Math.floor(this.tiles.length * this.tileDisabledRate);
+        while(disableCount > 0){
+            const randomIndex: number = Math.floor(Math.random() * this.tiles.length);
+            this.tiles[randomIndex].disable();
+            disableCount--;
+        }
+    }
+    private _setPowerTiles(){
+        const enabledTiles = this.tiles.filter(tile => !tile.isDisabled);
+        let tilePoweredCount: number = this.tilePoweredCount;
+        while(tilePoweredCount > 0){
+            const randomIndex: number = Math.floor(Math.random() * enabledTiles.length);
+            enabledTiles[randomIndex].setPowerTile();
+            tilePoweredCount--;
+        }
+    }
 }

@@ -65,6 +65,8 @@ export class HexagonTile {
     public get tileOwner(): GamePlayer { return this.tileState.ownedBy; }
     public get isOwned(): boolean { return !this.tileState.isNeutral; }
     public get isNeutral(): boolean { return this.tileState.isNeutral; }
+    public get isDisabled(): boolean { return this.tileState.isDisabled; }
+    public get isPowerTile(): boolean { return this.tileState.isPowerSource; }
 
     public get point0(): XYCoordinates { return this._point0; }
     public get point1(): XYCoordinates { return this._point1; }
@@ -158,6 +160,8 @@ export class HexagonTile {
 
         this._tileState = {
             isNeutral: true,
+            isDisabled: false,
+            isPowerSource: false,
             ownedBy: new GamePlayer('',''),
             powerValue: 0,
             powerLevel: 0,
@@ -168,7 +172,7 @@ export class HexagonTile {
     /** returns a boolean indicating whether or not the tile click action was valid */
     public clickTile(player: GamePlayer): boolean{
         let isValid = true;
-        if(this.isNeutral){
+        if(this.isNeutral && !this.isDisabled && !this.isPowerTile){
             this._tileState.ownedBy = player;
             this._tileState.powerValue = 1;
             this._tileState.isNeutral = false;
@@ -235,6 +239,13 @@ export class HexagonTile {
             y: Math.abs(point.y - this.centerPoint.y)
         }
         return diff;
+    }
+
+    public disable(){
+        this._tileState.isDisabled = true;
+    }
+    public setPowerTile(){
+        this._tileState.isPowerSource = true;
     }
 
     public toString(): string {
