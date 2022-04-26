@@ -32,6 +32,10 @@ export class GameBoardComponent implements OnInit {
       this._canvasContext = context;
       this._gameBoard = this._buildGameBoard();
       this.drawGameBoard();
+      this._gameBoard.startGame();
+      const sub = this._gameBoard.currentTurn$.subscribe((tick)=>{
+        this.drawGameBoard();
+      })
     }
   }
 
@@ -100,7 +104,10 @@ export class GameBoardComponent implements OnInit {
       this._canvasContext.lineTo(tile.point5.x, tile.point5.y);
       this._canvasContext.lineTo(tile.point0.x, tile.point0.y);
       if(tile.isPowerTile){
-        this._canvasContext.fillStyle = 'red';
+        this._canvasContext.fillStyle = 'black';
+        this._canvasContext.strokeStyle = "black";
+        this._canvasContext.lineWidth = 1;
+        this._canvasContext.stroke();
       }else{
         this._canvasContext.fillStyle = tile.fillColor;
       }

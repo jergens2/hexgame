@@ -60,7 +60,7 @@ export class HexagonTile {
         Val = 256, Level = 9
      */
     public get powerLevel(): number { return this._tileState.powerLevel; }
-    public get growValue(): number { return this._tileState.powerValue / 10; }
+    public get growValue(): number { return this._tileState.powerValue / 100; }
     public get growthAccumulation(): number { return this._tileState.growthAccumulation; }
     public get tileOwner(): GamePlayer { return this.tileState.ownedBy; }
     public get isOwned(): boolean { return !this.tileState.isNeutral; }
@@ -80,7 +80,7 @@ export class HexagonTile {
     public get neighbour2Coords(): XYCoordinates { return this._neighbour2Coord; }
     public get neighbour3Coords(): XYCoordinates { return this._neighbour3Coord; }
     public get neighbour4Coords(): XYCoordinates { return this._neighbour4Coord; }
-    public get neighbour5Coords(): XYCoordinates { return this._neighbour5Coord; }  
+    public get neighbour5Coords(): XYCoordinates { return this._neighbour5Coord; }
     public get neighbour0(): HexagonTile | null { return this._neighbour0; }
     public get neighbour1(): HexagonTile | null { return this._neighbour1; }
     public get neighbour2(): HexagonTile | null { return this._neighbour2; }
@@ -97,7 +97,7 @@ export class HexagonTile {
             this.neighbour5Coords,
         ];
     }
-    public get neighbours(): (HexagonTile | null)[] { 
+    public get neighbours(): (HexagonTile | null)[] {
         return [
             this.neighbour0,
             this.neighbour1,
@@ -145,56 +145,81 @@ export class HexagonTile {
         this._point5 = { x: currentX, y: currentY };
 
         this._neighbour0Coord = { x: hexCol, y: hexRow - 1 };
-        this._neighbour1Coord = { x: hexCol + 1, y: hexRow};
+        this._neighbour1Coord = { x: hexCol + 1, y: hexRow };
         this._neighbour2Coord = { x: hexCol + 1, y: hexRow + 1 };
         this._neighbour3Coord = { x: hexCol, y: hexRow + 1 };
         this._neighbour4Coord = { x: hexCol - 1, y: hexRow + 1 };
         this._neighbour5Coord = { x: hexCol - 1, y: hexRow };
 
-        if(hexCol%2 ==0){
-            this._neighbour1Coord = { x: hexCol + 1, y: hexRow-1};
+        if (hexCol % 2 == 0) {
+            this._neighbour1Coord = { x: hexCol + 1, y: hexRow - 1 };
             this._neighbour2Coord = { x: hexCol + 1, y: hexRow };
             this._neighbour4Coord = { x: hexCol - 1, y: hexRow };
-            this._neighbour5Coord = { x: hexCol - 1, y: hexRow-1 };
+            this._neighbour5Coord = { x: hexCol - 1, y: hexRow - 1 };
         }
 
         this._tileState = {
             isNeutral: true,
             isDisabled: false,
             isPowerSource: false,
-            ownedBy: new GamePlayer('',''),
+            ownedBy: new GamePlayer('', '', true),
             powerValue: 0,
             powerLevel: 0,
             growthAccumulation: 0,
         };
     }
 
+    public isSame(otherTile: HexagonTile): boolean {
+        return otherTile.centerPoint === this.centerPoint;
+    }
+
+
+
     /** returns a boolean indicating whether or not the tile click action was valid */
-    public clickTile(player: GamePlayer): boolean{
+    public clickTile(player: GamePlayer): boolean {
+        // console.log("Tile clicked by " + player.name + ": " + this.hexCol, this.hexRow)
         let isValid = true;
-        if(this.isNeutral && !this.isDisabled && !this.isPowerTile){
-            this._tileState.ownedBy = player;
-            this._tileState.powerValue = 1;
-            this._tileState.isNeutral = false;
-            this._fillColor = player.baseColor;
-        }else{
-            if(this.tileOwner === player){
-                this.incrementPowerValue();
-                
-            }else{
+        if (!this.isDisabled && !this.isPowerTile) {
+            let isNeighbour = false;
+            this.neighbours.forEach(n => {
+                if (n?.isOwned) {
+                    if (n.tileOwner === player) {
+                        isNeighbour = true;
+                    }
+                }
+            });
+            if (isNeighbour) {
+                if (this.isNeutral) {
+                    this.changeOwnership(player);
+                } else {
+                    if (this.tileOwner === player) {
+                        this.incrementPowerValue();
+                    }
+                    isValid = false;
+                }
+            } else {
                 isValid = false;
             }
+        } else {
+            isValid = false;
         }
         return isValid;
     }
 
-    public incrementPowerValue(){
-        this._tileState.powerValue ++;
+    public changeOwnership(player: GamePlayer) {
+        this._tileState.ownedBy = player;
+        this._tileState.powerValue = 1;
+        this._tileState.isNeutral = false;
+        this._fillColor = player.baseColor;
+    }
+
+    public incrementPowerValue() {
+        this._tileState.powerValue++;
         let powerLevel = 0;
-        if(this.powerValue === 1){
+        if (this.powerValue === 1) {
             powerLevel = 1;
             // Val = 1, Level = 1
-        }else if(this.powerValue > 1){
+        } else if (this.powerValue > 1) {
             // Val = 2, Level = 2
             // Val = 4, Level = 3
             // Val = 8, Level = 4
@@ -206,25 +231,25 @@ export class HexagonTile {
             let exponent = 1;
             let currentMax = 2 ** exponent;
             let valueFound = this.powerValue < currentMax;
-            while(!valueFound){
-                if(this.powerValue < currentMax){
+            while (!valueFound) {
+                if (this.powerValue < currentMax) {
                     valueFound = true;
-                }else{
+                } else {
                     exponent++;
                     currentMax = 2 ** exponent;
                 }
             }
             powerLevel = exponent;
-        }       
+        }
         this._tileState.powerLevel = powerLevel;
         this._updateFillColor();
     }
 
-    public incrementTurn(){
+    public incrementTurn() {
 
     }
 
-    public setNeighbours(neighbours: HexagonTile[]){
+    public setNeighbours(neighbours: HexagonTile[]) {
         this._neighbour0 = neighbours[0];
         this._neighbour1 = neighbours[1];
         this._neighbour2 = neighbours[2];
@@ -241,10 +266,10 @@ export class HexagonTile {
         return diff;
     }
 
-    public disable(){
+    public disable() {
         this._tileState.isDisabled = true;
     }
-    public setPowerTile(){
+    public setPowerTile() {
         this._tileState.isPowerSource = true;
     }
 
@@ -253,9 +278,9 @@ export class HexagonTile {
     }
 
     private _fillColor = 'rgb(' + 250 + ', ' + 250 + ', ' + 250 + ')';
-    private _updateFillColor(){
+    private _updateFillColor() {
         let baseColor: string = 'rgb(' + 250 + ', ' + 250 + ', ' + 250 + ')'
-        if(this.isOwned){
+        if (this.isOwned) {
             baseColor = this.tileOwner.baseColor;
         }
         this._fillColor = ColorCalculator.calculateColor(baseColor, this.powerLevel);

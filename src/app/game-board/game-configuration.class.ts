@@ -42,6 +42,7 @@ export class GameConfiguration {
         }
         this._currentPlayer = this._players[newIndex];
         this._currentTurn++;
+        console.log("Turn is now: " + this._currentTurn);
     }
 
     private _buildPlayers(playerCount: number) {
@@ -53,8 +54,8 @@ export class GameConfiguration {
             }
             const color1: string = this._sampleStartingColors[randomIndex];
             const color2: string = this._sampleStartingColors[secondIndex];
-            this._players.push(new GamePlayer(color1, 'Player 1'));
-            this._players.push(new GamePlayer(color2, 'Player 2'));
+            this._players.push(new GamePlayer(color1, 'Player 1', false));
+            this._players.push(new GamePlayer(color2, 'Player 2', true));
         } else {
             if (playerCount <= this._sampleStartingColors.length) {
                 const randomIndex = Math.floor(Math.random() * (this._sampleStartingColors.length));
@@ -62,7 +63,10 @@ export class GameConfiguration {
                 for (let i = 1; i <= playerCount; i++) {
                     const name = "Player " + i;
                     const color: string = this._sampleStartingColors[currentIndex];
-                    const newPlayer = new GamePlayer(color, name);
+                    // const isBot: boolean = i > 1;
+                    console.log("all players are bots.")
+                    const isBot: boolean = true;
+                    const newPlayer = new GamePlayer(color, name, isBot);
                     this._players.push(newPlayer);
                     currentIndex++;
                     if (currentIndex === this._sampleStartingColors.length) {
