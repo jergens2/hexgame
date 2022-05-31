@@ -1,5 +1,5 @@
 import { ColorCalculator } from "../color/color-calulator.class";
-import { GamePlayer } from "./game-player.class";
+import { GamePlayer } from "../game-player/game-player.class";
 import { HexagonTileState } from "./hexagon-tile-state.class";
 import { XYCoordinates } from "./xy-coordinates.class";
 
@@ -8,15 +8,19 @@ export class HexagonTile {
     /**
      * 
      * Horizontal Hexagon
-     *        n0
-     * n5  5______0    n1
-     *    /        \
-     *  4/          \ 1 
-     *   \          /
-     * n4 \________/    n2
-     *    3        2
-     *        n3
      * 
+     * 
+     *          n0
+     *   n5  5______0    n1
+     *      /        \
+     *    4/          \ 1 
+     *     \          /
+     *   n4 \________/    n2
+     *      3        2
+     *          n3
+     * 
+     * 
+     *    n is neighbour 
      */
 
     private _point0: XYCoordinates;
@@ -48,7 +52,7 @@ export class HexagonTile {
     private _tileState: HexagonTileState;
 
     public get tileState(): HexagonTileState { return this._tileState; }
-    public get powerValue(): number { return this._tileState.powerValue; }
+    // public get powerValue(): number { return this._tileState.powerValue; }
     /**
      *  Val = 2, Level = 2
         Val = 4, Level = 3
@@ -59,14 +63,15 @@ export class HexagonTile {
         Val = 128, Level = 8
         Val = 256, Level = 9
      */
-    public get powerLevel(): number { return this._tileState.powerLevel; }
-    public get growValue(): number { return this._tileState.powerValue / 100; }
-    public get growthAccumulation(): number { return this._tileState.growthAccumulation; }
+    // public get powerLevel(): number { return this._tileState.powerLevel; }
+    // public get growValue(): number { return this._tileState.powerValue / 100; }
+    // public get growthAccumulation(): number { return this._tileState.growthAccumulation; }
     public get tileOwner(): GamePlayer { return this.tileState.ownedBy; }
     public get isOwned(): boolean { return !this.tileState.isNeutral; }
     public get isNeutral(): boolean { return this.tileState.isNeutral; }
     public get isDisabled(): boolean { return this.tileState.isDisabled; }
     public get isPowerTile(): boolean { return this.tileState.isPowerSource; }
+    public get isSelected(): boolean { return this.tileState.isSelected; }
 
     public get point0(): XYCoordinates { return this._point0; }
     public get point1(): XYCoordinates { return this._point1; }
@@ -106,6 +111,61 @@ export class HexagonTile {
             this.neighbour4,
             this.neighbour5,
         ];
+    }
+
+    public getNeighbours(): HexagonTile[] { 
+        const neighbours: HexagonTile[] = [];
+        [   this._neighbour0, 
+            this._neighbour1, 
+            this._neighbour2, 
+            this._neighbour3, 
+            this._neighbour4, 
+            this._neighbour5
+        ].forEach(n => {
+            if(n !== null && n !== undefined){
+                neighbours.push(n);
+            }
+        });
+        return neighbours;
+    }
+    public get validNeighboursCount(): number { return this.getNeighbours().length; }
+    public get validNeighbours(): HexagonTile[]  { return this.getNeighbours(); }
+    public get neutralNeighbours(): HexagonTile[] { 
+        const validNeighbours = this.validNeighbours;
+        const neutralNeighbours: HexagonTile[] = [];
+        if(validNeighbours.length > 0){
+            validNeighbours.forEach(vn => {
+                if(vn.isNeutral){
+                    neutralNeighbours.push(vn);
+                }
+            });
+        }
+
+        return neutralNeighbours;
+    }
+    public get opponentNeighbours(): HexagonTile[] { 
+        const validNeighbours = this.validNeighbours;
+        const opponents: HexagonTile[] = [];
+        validNeighbours.forEach(vn => {
+            if(vn.isOwned){
+                if(vn.tileOwner !== this.tileOwner){
+                    opponents.push(vn);
+                }
+            }
+        });
+        return opponents;
+    }
+    public get ownedNeighbours(): HexagonTile[] { 
+        const validNeighbours = this.validNeighbours;
+        const owned: HexagonTile[] = [];
+        validNeighbours.forEach(vn => {
+            if(vn.isOwned){
+                if(vn.tileOwner === this.tileOwner){
+                    owned.push(vn);
+                }
+            }
+        });
+        return owned;
     }
 
     public get centerPoint(): XYCoordinates { return this._centerPoint; }
@@ -162,91 +222,139 @@ export class HexagonTile {
             isNeutral: true,
             isDisabled: false,
             isPowerSource: false,
-            ownedBy: new GamePlayer('', '', true),
-            powerValue: 0,
-            powerLevel: 0,
-            growthAccumulation: 0,
+            ownedBy: new GamePlayer('', '', '', true),
+            hasLeader: false,
+            energyValue: 0,
+            energyGrowValue: 0.01,
+            isSelected: false,
+            // powerValue: 0,
+            // powerLevel: 0,
+            // growthAccumulation: 0,
         };
     }
 
     public isSame(otherTile: HexagonTile): boolean {
         return otherTile.centerPoint === this.centerPoint;
     }
-
-
+    public selectTile() {
+        this._tileState.isSelected = true;
+        this._fillColor = "gray";
+    }
+    public deselectTile() {
+        this._tileState.isSelected = false;
+        if (this.isOwned) {
+            this._fillColor = this.tileOwner.baseColor;
+            if (this.tileState.hasLeader) {
+                this._fillColor = 'white';
+            }
+        }
+    }
 
     /** returns a boolean indicating whether or not the tile click action was valid */
     public clickTile(player: GamePlayer): boolean {
         // console.log("Tile clicked by " + player.name + ": " + this.hexCol, this.hexRow)
-        let isValid = true;
-        if (!this.isDisabled && !this.isPowerTile) {
-            let isNeighbour = false;
-            this.neighbours.forEach(n => {
-                if (n?.isOwned) {
-                    if (n.tileOwner === player) {
-                        isNeighbour = true;
-                    }
-                }
-            });
-            if (isNeighbour) {
-                if (this.isNeutral) {
-                    this.changeOwnership(player);
-                } else {
-                    if (this.tileOwner === player) {
-                        this.incrementPowerValue();
-                    }
-                    isValid = false;
-                }
-            } else {
-                isValid = false;
+        let isValid = false;
+
+        if (player.playerTurnCount === 0) {
+            if (this.tileOwner === player) {
+
+                isValid = true;
+                return isValid;
             }
         } else {
-            isValid = false;
+
+
         }
+
+
         return isValid;
+    }
+
+    public grow() {
+        if (this.tileState.energyGrowValue > 0) {
+            this._tileState.energyValue += this.tileState.energyGrowValue;
+        }
+    }
+
+    public placeLeader(player: GamePlayer) {
+        this._tileState.hasLeader = true;
+        this._tileState.energyGrowValue += 1;
+        this._strokeWidth = 2;
     }
 
     public changeOwnership(player: GamePlayer) {
         this._tileState.ownedBy = player;
-        this._tileState.powerValue = 1;
         this._tileState.isNeutral = false;
         this._fillColor = player.baseColor;
     }
 
-    public incrementPowerValue() {
-        this._tileState.powerValue++;
-        let powerLevel = 0;
-        if (this.powerValue === 1) {
-            powerLevel = 1;
-            // Val = 1, Level = 1
-        } else if (this.powerValue > 1) {
-            // Val = 2, Level = 2
-            // Val = 4, Level = 3
-            // Val = 8, Level = 4
-            // Val = 16, Level = 5
-            // Val = 32, Level = 6
-            // Val = 64, Level = 7
-            // Val = 128, Level = 8
-            // Val = 256, Level = 9
-            let exponent = 1;
-            let currentMax = 2 ** exponent;
-            let valueFound = this.powerValue < currentMax;
-            while (!valueFound) {
-                if (this.powerValue < currentMax) {
-                    valueFound = true;
-                } else {
-                    exponent++;
-                    currentMax = 2 ** exponent;
-                }
+    public takeNeutralTile(attacker: GamePlayer, attackingTile: HexagonTile) {
+        // console.log("Taking a neutral tile")
+        this.attackOwnedTile(attacker, attackingTile);
+        // const attackingEnergy = attackingTile.tileState.energyValue;
+        // const defendingEnergy = this.tileState.energyValue + 1;
+        // const outcome = attackingEnergy-defendingEnergy;
+        // if(outcome>0){
+        //     this.changeOwnership(attacker);
+        //     this._tileState.energyGrowValue = 0;
+        //     this._tileState.energyValue = outcome;
+        //     attackingTile._tileState.energyValue = outcome;
+        // }else if(outcome === 0){
+        //     const randomOutcome = Math.random();
+        //     if(randomOutcome >= 0.5){
+        //         this.changeOwnership(attacker);
+        //         this._tileState.energyGrowValue = 0;
+        //         this._tileState.energyValue = 0;
+        //     }else{
+        //         "Draw";
+        //     }
+        // }else if(outcome < 0){
+        //     console.log("Loss.  oof.")
+        // }
+    }
+
+    public attackOwnedTile(attacker: GamePlayer, attackingTile: HexagonTile) {
+        // console.log("attacking a tile")
+        const attackingEnergy = attackingTile.tileState.energyValue;
+        const defendingEnergy = this.tileState.energyValue + 1;
+        const outcome = attackingEnergy-defendingEnergy;
+        attackingTile._tileState.energyValue -= attackingEnergy;
+        if(outcome>0){
+            this.changeOwnership(attacker);
+            this._tileState.energyGrowValue = 0;
+            this._tileState.energyValue = outcome;
+        }else if(outcome === 0){
+            const randomOutcome = Math.random();
+            if(randomOutcome >= 0.5){
+                this.changeOwnership(attacker);
+                this._tileState.energyGrowValue = 0;
+                this._tileState.energyValue = 0;
+            }else{
+                // "Draw";
             }
-            powerLevel = exponent;
+        }else if(outcome < 0){
+            // console.log("Loss.  oof.")
         }
-        this._tileState.powerLevel = powerLevel;
-        this._updateFillColor();
+    }
+
+    public spreadtoOwnedTile(attacker: GamePlayer, attackingTile: HexagonTile) {
+        const energySpread = attackingTile.tileState.energyValue;
+        attackingTile.tileState.energyValue = 0;
+        this.tileState.energyValue += energySpread;
     }
 
     public incrementTurn() {
 
+    }
+
+    public isNeighbour(test: HexagonTile): boolean{
+        let isNeighbour = false;
+        this.neighbours.forEach(neighbour => {
+            if(neighbour?.hexCol === test.hexCol && neighbour.hexRow === test.hexRow){
+                isNeighbour = true;
+            }
+        });
+        return isNeighbour; 
     }
 
     public setNeighbours(neighbours: HexagonTile[]) {
@@ -278,14 +386,14 @@ export class HexagonTile {
     }
 
     private _fillColor = 'rgb(' + 250 + ', ' + 250 + ', ' + 250 + ')';
+    private _strokeWidth: number = 1;
     private _updateFillColor() {
         let baseColor: string = 'rgb(' + 250 + ', ' + 250 + ', ' + 250 + ')'
         if (this.isOwned) {
             baseColor = this.tileOwner.baseColor;
         }
-        this._fillColor = ColorCalculator.calculateColor(baseColor, this.powerLevel);
+        this._fillColor = ColorCalculator.calculateColor(baseColor, this.tileState.energyValue);
     }
-    public get fillColor(): string {
-        return this._fillColor;
-    }
+    public get fillColor(): string { return this._fillColor; }
+    public get strokeWidth(): number { return this._strokeWidth; }
 }

@@ -1,11 +1,15 @@
-import { GamePlayer } from "./game-player.class";
+import { GamePlayer } from "../game-player/game-player.class";
 
 export interface HexagonTileState {
     isNeutral: boolean;
     isDisabled: boolean;
     isPowerSource: boolean;
     ownedBy: GamePlayer;
-    powerValue: number;
-    powerLevel: number;
-    growthAccumulation: number;
+    hasLeader: boolean;
+    energyValue: number;
+    energyGrowValue: number;
+    isSelected: boolean;
+    // powerValue: number;
+    // powerLevel: number;
+    // growthAccumulation: number;
 }

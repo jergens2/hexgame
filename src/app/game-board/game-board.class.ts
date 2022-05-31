@@ -1,15 +1,19 @@
-import { Observable, Subject, timer } from "rxjs";
+import { Observable, Subject, Subscription, timer } from "rxjs";
 import { GameBoardMap } from "./game-board-map.class";
 import { GameConfiguration } from "./game-configuration.class";
-import { GamePlayer } from "./game-player.class";
+import { GamePlayerBot } from "../game-player/game-player-bot.class";
+import { GamePlayerBuilder } from "../game-player/game-player-builder.class";
+import { GamePlayer } from "../game-player/game-player.class";
+import { GameTurnProcessor } from "./game-turn-processor.class";
 import { HexagonTile } from "./hexagon-tile.class";
 import { XYCoordinates } from "./xy-coordinates.class";
+import { GameLogService } from "../game-log/game-log.service";
 
 export class GameBoard {
     private _tiles: HexagonTile[] = [];
     private _configuration: GameConfiguration;
     private _mouseOverTile: HexagonTile | null = null;
-    private _currentTurn$: Subject<number>;
+
 
     public get canvasWidth(): number { return this._configuration.canvasWidth; }
     public get canvasHeight(): number { return this._configuration.canvasHeight; }
@@ -22,113 +26,65 @@ export class GameBoard {
     public get tileDisabledRate(): number { return this._configuration.tileDisabledRate; }
     public get tilePoweredCount(): number { return this._configuration.tilePoweredCount; }
 
-    public get currentTurn$(): Observable<number> { return this._currentTurn$.asObservable(); }
+    public get currentTurn$(): Observable<number> { return this._configuration.currentTurn$; }
 
     public get mouseOverTile(): HexagonTile | null { return this._mouseOverTile; }
 
-    constructor() {
+    private _botTurnSubscription: Subscription = new Subscription();
+    private _logService: GameLogService;
+
+    constructor(logService: GameLogService) {
+        this._logService = logService;
         this._configuration = this._configureGame();
         this._buildTiles();
         this._disableTiles();
         this._setPowerTiles();
         this._setPlayerPositions();
-        this._currentTurn$ = new Subject();
-        this.currentTurn$.subscribe(turn => {
-            if (this.currentPlayer.isBot) {
-                timer(10).subscribe(() => {
-                    this.takeBotTurn();
-                    this.incrementTurn();
-                })
-            }
-        })
+
     }
-    private _configureGame(): GameConfiguration{
-        const playerCount: number = 6;
+    private _configureGame(): GameConfiguration {
+        const playerBuilder = new GamePlayerBuilder();
+        const players = playerBuilder.buildPlayers(1, 5);
+        // const players = playerBuilder.buildPlayers(0, 6);
         const canvasWidth: number = 768;
         const canvasHeight: number = 768;
         const tileRadius: number = 10;
         const tileBuffer: number = 2;
         const tileDisabledRate: number = 0.05;
-        const tilePoweredCount: number = (2 * playerCount) + 1;
-        return new GameConfiguration(playerCount, canvasWidth, canvasHeight, tileRadius, tileBuffer, tileDisabledRate, tilePoweredCount);
+        const tilePoweredCount: number = 12;
+        return new GameConfiguration(players, canvasWidth, canvasHeight, tileRadius, tileBuffer, tileDisabledRate, tilePoweredCount);
     }
+
 
     public startGame() {
+
+        this._configuration.currentPlayer$.subscribe(player => {
+            
+            if (player.isBot) {
+                this._takeBotTurn();
+            }
+        });
+        this.currentTurn$.subscribe(turn => {
+            this._logService.addToLog("The turn was incremented! initiating GROWTH", this._configuration);
+            this._tiles.forEach(tile => tile.grow());
+        });
+
+        // if (this.currentPlayer.isBot) {
+        //     this._takeBotTurn();
+        // }
+    }
+
+    private _takeBotTurn() {
         if (this.currentPlayer.isBot) {
-            this.takeBotTurn();
-            this.incrementTurn();
+            const currentBotPlayer = this.currentPlayer as GamePlayerBot;
+            const botTurnTimeMs = 100;
+            timer(botTurnTimeMs).subscribe(() => {
+                currentBotPlayer.takeBotTurn(this.tiles);
+                this._logService.addToLog("Incrementing player", this._configuration);
+                this._configuration.incrementPlayer();
+            });
         }
     }
-
-    public incrementTurn() {
-        // console.log("Current turn: ", this._configuration.currentTurn);
-        if (this._configuration.currentTurn < 1000) {
-
-
-            if (this.currentPlayer.isBot) {
-                this.takeBotTurn();
-            }
-            this._tiles.forEach(tile => {
-            tile.tileState.growthAccumulation += tile.growValue;
-            let accumulatedGrowth = tile.growthAccumulation;
-            if (accumulatedGrowth >= 1) {
-                let growCount = 0;
-                let neighbours: HexagonTile[] = [];
-                tile.neighbours.forEach(n => {
-                    if (n !== null && n !== undefined) {
-                        neighbours.push(n);
-                    }
-                });
-                // console.log("Neighbours: ", neighbours)
-                if (neighbours.length > 0) {
-                    neighbours = neighbours.filter(n => (n.isNeutral || n.tileOwner === tile.tileOwner));
-                    if (neighbours.length > 0) {
-                        for (let i = 0; i < Math.floor(accumulatedGrowth); i++) {
-                            let randomIndex = Math.floor(Math.random() * neighbours.length);
-                            // console.log("Random index, Neighbours.length", randomIndex, neighbours.length)
-                            neighbours[randomIndex].clickTile(tile.tileOwner);
-                            growCount++;
-                        }
-                        accumulatedGrowth = accumulatedGrowth - growCount;
-                        tile.tileState.growthAccumulation = accumulatedGrowth;
-                    }
-                }
-            }
-        });
-            this._configuration.incrementTurn();
-            this._currentTurn$.next(this._configuration.currentTurn);
-        } else {
-            console.log("Game over", this._configuration.currentTurn);
-        }
-
-
-    }
-
-    public takeBotTurn() {
-
-        const ownedTiles: HexagonTile[] = this.tiles.filter(tile => tile.tileOwner === this.currentPlayer);
-        const eligibleTiles: HexagonTile[] = [...ownedTiles];
-        ownedTiles.forEach(ownedTile => {
-            ownedTile.neighbours.forEach(neighbour => {
-                if (neighbour !== null && neighbour !== undefined) {
-                    if (!neighbour.isDisabled && !neighbour.isPowerTile && neighbour.isNeutral) {
-                        let alreadyCounted: boolean = false;
-                        eligibleTiles.forEach(eligibleTile => {
-                            if (eligibleTile.isSame(neighbour)) {
-                                alreadyCounted = true;
-                            }
-                        });
-                        if (!alreadyCounted) {
-                            eligibleTiles.push(neighbour);
-                        }
-                    }
-                }
-            })
-        });
-        const randomIndex = Math.floor(Math.random() * eligibleTiles.length);
-        eligibleTiles[randomIndex].clickTile(this.currentPlayer);
-    }
-
 
     public mouseMove(xy: XYCoordinates) {
         let closestTile: HexagonTile = this._tiles[0];
@@ -155,58 +111,53 @@ export class GameBoard {
     }
 
 
+
+
+    private _turnProcessor: GameTurnProcessor = new GameTurnProcessor();
+    private _validatingCurrentAction: boolean = false;
+    /**
+     * 
+     * The board is clicked by the current non-bot player
+     * 
+     */
     public clickBoard(xy: XYCoordinates) {
-        let closestTile: HexagonTile = this._tiles[0];
-        let smallestDif = this.canvasWidth;
-        this._tiles.forEach(tile => {
-            let diff = tile.getDistanceTo(xy);
-            let totalDiff = diff.x + diff.y;
-            if (totalDiff < smallestDif) {
-                smallestDif = totalDiff;
-                closestTile = tile;
+        if (!this.currentPlayer.isBot) {
+            if (this._validatingCurrentAction === false) {
+                this._validatingCurrentAction = true;
+                let closestTile: HexagonTile = this._tiles[0];
+                let smallestDif = this.canvasWidth;
+                this._tiles.forEach(tile => {
+                    let diff = tile.getDistanceTo(xy);
+                    let totalDiff = diff.x + diff.y;
+                    if (totalDiff < smallestDif) {
+                        smallestDif = totalDiff;
+                        closestTile = tile;
+                    }
+                });
+                let selectedTile: HexagonTile | undefined = this.tiles.find(tile => tile.isSelected);
+                const turnProcessor = new GameTurnProcessor();
+                const endOfTurn: boolean = turnProcessor.processClick(this.currentPlayer, closestTile, selectedTile, this.tiles);
+                if (endOfTurn) {
+                    this._tiles.forEach(tile => tile.deselectTile());
+                    this._validatingCurrentAction = false;
+                    this._logService.addToLog("Incrementing player", this._configuration);
+                    this._configuration.incrementPlayer();
+                }
+                this._validatingCurrentAction = false;
+            } else {
+                console.log("Can't click right now, try again");
             }
-        });
-
-        if (closestTile.clickTile(this.currentPlayer)) {
-            this.incrementTurn();
         } else {
-            //console.log("INVALID CLICK")
+            console.log("Can't click during bot's turn")
         }
-
     }
 
-    // private _incrementTurn() {
-    //     this._configuration.incrementTurn();
-    //     console.log("Current turn:  " + this._configuration.currentTurn)
-    //     // this._tiles.forEach(tile => tile.incrementTurn());
-    //     this._tiles.forEach(tile => {
-    //         tile.tileState.growthAccumulation += tile.growValue;
-    //         let accumulatedGrowth = tile.growthAccumulation;
-    //         if (accumulatedGrowth >= 1) {
-    //             let growCount = 0;
-    //             let neighbours: HexagonTile[] = [];
-    //             tile.neighbours.forEach(n => {
-    //                 if (n !== null && n !== undefined) {
-    //                     neighbours.push(n);
-    //                 }
-    //             });
-    //             // console.log("Neighbours: ", neighbours)
-    //             if (neighbours.length > 0) {
-    //                 neighbours = neighbours.filter(n => (n.isNeutral || n.tileOwner === tile.tileOwner));
-    //                 if (neighbours.length > 0) {
-    //                     for (let i = 0; i < Math.floor(accumulatedGrowth); i++) {
-    //                         let randomIndex = Math.floor(Math.random() * neighbours.length);
-    //                         // console.log("Random index, Neighbours.length", randomIndex, neighbours.length)
-    //                         neighbours[randomIndex].clickTile(tile.tileOwner);
-    //                         growCount++;
-    //                     }
-    //                     accumulatedGrowth = accumulatedGrowth - growCount;
-    //                     tile.tileState.growthAccumulation = accumulatedGrowth;
-    //                 }
-    //             }
-    //         }
-    //     });
-    // }
+    public onClickPass(){
+        this._tiles.forEach(tile => tile.deselectTile());
+        this._logService.addToLog("Player PASSED", this._configuration);
+        this._configuration.incrementPlayer();
+    }
+
 
     private _buildTiles(): void {
         const effectiveRadius = this.tileRadius + this.tileBuffer;
@@ -290,17 +241,33 @@ export class GameBoard {
         }
     }
 
-    /** randomly assign a tile to each player */
+
+    /**
+     * 
+     * ZANY MODE:
+     * occupy every neutral spot randomly and evenly for each player, sort of like how the board game Risk starts
+     * 
+     */
     private _setPlayerPositions() {
-        const map = new GameBoardMap(this._configuration, this.tiles)
-        
+
+
         let eligibleTiles = this.tiles.filter(tile => {
             return (tile.isNeutral && !tile.isDisabled && !tile.isPowerTile)
         });
-        this.players.forEach(player => {
+
+        let playerIndex = 0;
+        while (eligibleTiles.length > 0) {
             let randomIndex = Math.floor(Math.random() * (eligibleTiles.length - 1));
-            eligibleTiles[randomIndex].changeOwnership(player);
+            eligibleTiles[randomIndex].changeOwnership(this.players[playerIndex]);
             eligibleTiles.splice(randomIndex, 1);
-        });
+            playerIndex++;
+            if (playerIndex == this.playerCount) {
+                playerIndex = 0;
+            }
+            // eligibleTiles = this.tiles.filter(tile => {
+            //     return (tile.isNeutral && !tile.isDisabled && !tile.isPowerTile)
+            // });
+        }
     }
+
 }

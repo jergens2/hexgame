@@ -42,3 +42,18 @@
     // width: 768px;
     // height: 768px;
 }
+
+
+.pass-button{
+    margin: 5px;
+    font-size: 1.5em;
+
+}
+
+.pass-button-container{
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
