@@ -1,5 +1,4 @@
-import { ColorCalculator } from "../color/color-calulator.class";
-import { HexagonTile } from "../game-board/hexagon-tile.class";
+import { ColorCalculator } from "src/app/color/color-calulator.class";
 
 export class GamePlayer {
 

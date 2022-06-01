@@ -1,6 +1,6 @@
-import { GamePlayer } from "../game-player/game-player.class";
+import { GamePlayer } from "../../game-player/game-player.class";
 
-export interface HexagonTileState {
+export interface TileState {
     isNeutral: boolean;
     isDisabled: boolean;
     isPowerSource: boolean;

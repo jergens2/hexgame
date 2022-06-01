@@ -1,4 +1,5 @@
-import { HexagonTile } from "../game-board/hexagon-tile.class";
+import { TileNeighbourFinder } from "../game-board/tiles/tile-neighbour-finder.class";
+import { Tile } from "../game-board/tiles/tile.class";
 import { GamePlayer } from "./game-player.class";
 
 export class GamePlayerBot extends GamePlayer {
@@ -6,9 +7,9 @@ export class GamePlayerBot extends GamePlayer {
         super(color, name, id, true);
     }
 
-    public takeBotTurn(tiles: HexagonTile[]) {
+    public takeBotTurn(tiles: Tile[]) {
         
-        const ownedTiles: HexagonTile[] = tiles.filter(tile => {
+        const ownedTiles: Tile[] = tiles.filter(tile => {
             let isOwned: boolean = false;
             if(tile.isOwned){
                 if(tile.tileOwner.id === this.id){
@@ -22,7 +23,7 @@ export class GamePlayerBot extends GamePlayer {
             let randomIndex = Math.floor(Math.random() * (ownedTiles.length - 1));
             ownedTiles[randomIndex].placeLeader(this);
         }else{
-            const energyTiles: HexagonTile[] = [];
+            const energyTiles: Tile[] = [];
             tiles.forEach(tile => {
                 if(tile.isOwned){
                     if(tile.tileOwner === this){
@@ -45,9 +46,9 @@ export class GamePlayerBot extends GamePlayer {
                 let actionTaken: boolean = false;
                 let index = 0;
                 while(actionTaken === false && index < sortedTiles.length){
-                    const neutrals: HexagonTile[] = sortedTiles[index].neutralNeighbours;
-                    const opponents: HexagonTile[] = sortedTiles[index].opponentNeighbours;
-                    const ownedTiles: HexagonTile[] = sortedTiles[index].ownedNeighbours;
+                    const neutrals: Tile[] = TileNeighbourFinder.getNeutralNeighboursOf(sortedTiles[index], tiles); 
+                    const opponents: Tile[] = TileNeighbourFinder.getOpponentNeighboursOf(sortedTiles[index], tiles); 
+                    const ownedTiles: Tile[] = TileNeighbourFinder.getOwnedNeighboursOf(sortedTiles[index], tiles); 
                     if(neutrals.length > 0){
                         this._getRandomTile(neutrals).takeNeutralTile(this, sortedTiles[index]);
                         actionTaken = true;
@@ -79,7 +80,7 @@ export class GamePlayerBot extends GamePlayer {
 
 
     /** returns a random tile from an array */
-    private _getRandomTile(tiles: HexagonTile[]){
+    private _getRandomTile(tiles: Tile[]){
         const randomIndex: number = Math.floor(Math.random() * tiles.length);
         console.log("Random index from " + tiles.length + " is : " + randomIndex);
         return tiles[randomIndex];

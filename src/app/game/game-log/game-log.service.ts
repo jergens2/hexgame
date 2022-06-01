@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { GameConfiguration } from '../game-board/game-configuration.class';
+import { GameState } from '../game-state.class';
 import { GameLog } from './game-log.class';
 
 @Injectable({
@@ -15,7 +15,7 @@ export class GameLogService {
 
   constructor() { }
 
-  public addToLog(message: string, config: GameConfiguration){
+  public addToLog(message: string, config: GameState){
     const gameLog = this.gameLog;
     const entry = gameLog.addToLog(message, config);
     console.log(entry.toString());

@@ -1,10 +1,10 @@
-import { GameConfiguration } from "./game-configuration.class";
-import { HexagonTile } from "./hexagon-tile.class";
+import { GameState } from "../../game-state.class";
+import { TileHexagon } from "../tiles/tile-hexagon";
 
 /** A helper class for the purpose of better distributing players and power tiles more evenly on the board */
 export class GameBoardMap{
-    private _config: GameConfiguration;
-    constructor(config: GameConfiguration, tiles: HexagonTile[]){
+    private _config: GameState;
+    constructor(config: GameState, tiles: TileHexagon[]){
         this._config = config;
         const playerCount = this._config.playerCount;
         

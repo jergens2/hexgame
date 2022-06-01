@@ -1,4 +1,4 @@
-import { GameConfiguration } from "../game-board/game-configuration.class";
+import { GameState } from "../game-state.class";
 import { GamePlayer } from "../game-player/game-player.class";
 
 export class GameLogEntry{
@@ -15,7 +15,7 @@ export class GameLogEntry{
         return "Turn " + this.turnCount + "\t" + this.currentPlayer.name + "\t" + this.message; 
     }
     
-    constructor(message: string, config :GameConfiguration){
+    constructor(message: string, config :GameState){
         this._message = message;
         this._turnCount = config.currentTurn;
         this._currentPlayer = config.currentPlayer;

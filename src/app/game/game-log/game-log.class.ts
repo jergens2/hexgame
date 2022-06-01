@@ -1,4 +1,4 @@
-import { GameConfiguration } from "../game-board/game-configuration.class";
+import { GameState } from "../game-state.class";
 import { GameLogEntry } from "./game-log-entry.class";
 
 export class GameLog {
@@ -16,7 +16,7 @@ export class GameLog {
 
     }
 
-    public addToLog(message: string, config: GameConfiguration): GameLogEntry {
+    public addToLog(message: string, config: GameState): GameLogEntry {
         const newEntry = new GameLogEntry(message, config)
         this._logEntries.push(newEntry);
         return newEntry;

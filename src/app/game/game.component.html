@@ -1,4 +1,4 @@
-<div class="game-board-root">
+<div class="game-root">
     <div class="left-column">
         <div class="current-player" [ngStyle]="currentPlayerNgStyle">
             {{ currentPlayer.name }} 's turn
@@ -18,8 +18,9 @@
             </button>
         </div>
     </div>
+    
+    <app-game-board></app-game-board>
 
-    <div class="canvas-container">
-        <canvas #gameboard class="canvas" id="canvas" width=768 height=768 (click)="onClickCanvas($event)" (mousemove)="onMouseMove($event)">hello</canvas>
-    </div>
+
+
 </div>
