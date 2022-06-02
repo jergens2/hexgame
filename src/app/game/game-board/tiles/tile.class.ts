@@ -3,36 +3,27 @@ import { Unit } from "../units/unit.class";
 import { TileHexagon } from "./tile-hexagon";
 import { TileProductionMode } from "./tile-production-mode.enum";
 import { TileState } from "./tile-state.class";
+import { TileModifier } from "./tile-modifier.class";
+import { TileActionController } from "./tile-action-controller.class";
+import { LeaderUnit } from "../units/leader-unit.class";
 
 export class Tile{ 
 
     private _units: Unit[] = [];
+    private _modifiers: TileModifier [] = [];
     private _productionMode: TileProductionMode = TileProductionMode.BUILD_UNITS;
     private _hexagon: TileHexagon;
-
     private _tileState: TileState;
+    private _actionController: TileActionController;
 
     public get tileState(): TileState { return this._tileState; }
-    // public get powerValue(): number { return this._tileState.powerValue; }
-    /**
-     *  Val = 2, Level = 2
-        Val = 4, Level = 3
-        Val = 8, Level = 4
-        Val = 16, Level = 5
-        Val = 32, Level = 6
-        Val = 64, Level = 7
-        Val = 128, Level = 8
-        Val = 256, Level = 9
-     */
-    // public get powerLevel(): number { return this._tileState.powerLevel; }
-    // public get growValue(): number { return this._tileState.powerValue / 100; }
-    // public get growthAccumulation(): number { return this._tileState.growthAccumulation; }
     public get tileOwner(): GamePlayer { return this.tileState.ownedBy; }
     public get isOwned(): boolean { return !this.tileState.isNeutral; }
     public get isNeutral(): boolean { return this.tileState.isNeutral; }
     public get isDisabled(): boolean { return this.tileState.isDisabled; }
     public get isPowerTile(): boolean { return this.tileState.isPowerSource; }
     public get isSelected(): boolean { return this.tileState.isSelected; }
+    public get hasActions(): boolean { return this._actionController.hasActions; }
 
     public get units(): Unit[] { return this._units; }
     public get productionMode(): TileProductionMode { return this._productionMode; }
@@ -53,6 +44,7 @@ export class Tile{
             // powerLevel: 0,
             // growthAccumulation: 0,
         };
+        this._actionController = new TileActionController();
     }
 
 
@@ -80,10 +72,15 @@ export class Tile{
         }
     }
 
-    public placeLeader(player: GamePlayer) {
+
+    public addUnit(unit: Unit){
+        this._units.push(unit);
+    }
+
+    public placeLeader(leader: LeaderUnit) {
+        this.addUnit(leader);
         this._tileState.hasLeader = true;
         this._tileState.energyGrowValue += 1;
-        // this._strokeWidth = 2;
     }
 
     public changeOwnership(player: GamePlayer) {

@@ -12,15 +12,17 @@
                 </div>
             </div>
         </div>
+
+    </div>
+
+    <app-game-board></app-game-board>
+
+    <div class="right-column">
         <div class="pass-button-container">
-            <button class="pass-button" enabled="passButtonEnabled" (click)="onClickPass()">
-                Pass
+            <button class="pass-button" enabled="passButtonEnabled" (click)="onClickEndTurnButton()">
+                End Turn
             </button>
         </div>
     </div>
-    
-    <app-game-board></app-game-board>
-
-
 
 </div>

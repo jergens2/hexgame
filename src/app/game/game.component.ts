@@ -27,17 +27,17 @@ export class GameComponent implements OnInit {
 
   public get currentPlayerNgStyle(): any { return this._currentPlayerNgStyle; }
 
-  public onClickPass(){
-    this.game.onClickPass();
-  }
-
   ngOnInit(): void {
-    const configuration = this._getConfiguration();
-    const game = new Game(configuration);
+    const state = this._buildGameState();
+    const game = new Game(state);
     this._gameService.setGame(game);
   }  
 
-  private _getConfiguration(): GameState{
+  public onClickEndTurnButton(){
+    this.game.onClickPass();
+  }
+
+  private _buildGameState(): GameState{
     const players = GamePlayerBuilder.buildPlayers(1, 5);
     // const players = GamePlayerBuilder.buildPlayers(0, 6);
     const configuration: GameConfiguration = { 

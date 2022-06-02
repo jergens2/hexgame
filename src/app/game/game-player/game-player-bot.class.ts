@@ -1,5 +1,6 @@
 import { TileNeighbourFinder } from "../game-board/tiles/tile-neighbour-finder.class";
 import { Tile } from "../game-board/tiles/tile.class";
+import { LeaderUnit } from "../game-board/units/leader-unit.class";
 import { GamePlayer } from "./game-player.class";
 
 export class GamePlayerBot extends GamePlayer {
@@ -21,7 +22,8 @@ export class GamePlayerBot extends GamePlayer {
         
         if(this.playerTurnCount === 0){
             let randomIndex = Math.floor(Math.random() * (ownedTiles.length - 1));
-            ownedTiles[randomIndex].placeLeader(this);
+            const leader = new LeaderUnit(this);
+            ownedTiles[randomIndex].placeLeader(leader);
         }else{
             const energyTiles: Tile[] = [];
             tiles.forEach(tile => {

@@ -25,37 +25,21 @@ export class Game {
     constructor(state: GameState) {
         this._state = state;
         this._board = new GameBoard(this._state);
+        this._startGame();
     }
 
-    public startGame() {
+    private _startGame() {
         this._state.currentPlayer$.subscribe(player => {
             if (player.isBot) {
-                // this._takeBotTurn();
             }
         });
         this.currentTurn$.subscribe(turn => {
-            // this._logService.addToLog("The turn was incremented! initiating GROWTH", this._configuration);
-            // this.tiles.forEach(tile => tile.grow());
+
         });
     }
 
-    // private _takeBotTurn() {
-    //     if (this.currentPlayer.isBot) {
-    //         const currentBotPlayer = this.currentPlayer as GamePlayerBot;
-    //         const botTurnTimeMs = 100;
-    //         timer(botTurnTimeMs).subscribe(() => {
-    //             currentBotPlayer.takeBotTurn(this.tiles);
-    //             // this._logService.addToLog("Incrementing player", this._configuration);
-    //             this._configuration.incrementPlayer();
-    //         });
-    //     }
-    // }
-
-
     public onClickPass() {
-        // this._tiles.forEach(tile => tile.deselectTile());
-        // // this._logService.addToLog("Player PASSED", this._configuration);
-        // this._configuration.incrementPlayer();
+
     }
 
 }

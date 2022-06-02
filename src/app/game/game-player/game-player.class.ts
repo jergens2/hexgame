@@ -14,6 +14,7 @@ export class GamePlayer {
     public get name(): string { return this._name; }
     public get id(): string { return this._id; }
     public get isBot(): boolean { return this._isBot; }
+    public get isHuman(): boolean { return !this._isBot; }
     /** The number of turns this player has taken */
     public get playerTurnCount(): number { return this._playerTurnCount; }
 

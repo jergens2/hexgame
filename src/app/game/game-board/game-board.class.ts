@@ -5,6 +5,9 @@ import { TileBuilder } from "./tiles/tile-builder.class";
 import { Tile } from "./tiles/tile.class";
 import { GameState } from "../game-state.class";
 import { GameBoardInitializer } from "./game-board-initializer.class";
+import { UserClickMode } from "./user-click-mode.enum";
+import { UserClickController } from "./user-click-controller.class";
+import { GamePlayer } from "../game-player/game-player.class";
 
 export class GameBoard {
 
@@ -13,6 +16,7 @@ export class GameBoard {
     private _canvasHeight: number;
     private _tileRadius: number;
     private _tileBuffer: number;
+    private _userClickController: UserClickController;
 
     public get tiles(): Tile[] { return this._tiles; }
 
@@ -29,24 +33,23 @@ export class GameBoard {
         GameBoardInitializer.disableTiles(this.tiles, gameState.tileDisabledRate);
         GameBoardInitializer.setPowerTiles(this.tiles, gameState.tilePoweredCount);
         GameBoardInitializer.setPlayerPositions(this.tiles, gameState.players);
+        GameBoardInitializer.placeLeaderUnits(this.tiles, gameState.players);
+        this._userClickController = new UserClickController();
+        gameState.currentTurn$.subscribe(turn => {this._userClickController.reset(); });
     }
         
     /** 
      * The board is clicked by the current non-bot player
      */
-    public clickBoard(xy: XYCoordinates) {
-        let closestTile: Tile = this._tiles[0];
-        let smallestDif = this._canvasWidth;
-        this._tiles.forEach(tile => {
-            let diff = tile.hexagon.getDistanceTo(xy);
-            let totalDiff = diff.x + diff.y;
-            if (totalDiff < smallestDif) {
-                smallestDif = totalDiff;
-                closestTile = tile;
-            }
-        });
-        let selectedTile: Tile | undefined = this.tiles.find(tile => tile.isSelected);
+    public leftClickBoard(xy: XYCoordinates, currentPlayer: GamePlayer) {
+        console.log("Board was left-clicked");
+        this._userClickController.clickBoard(xy, currentPlayer, this.tiles, this._canvasWidth);
     }
+    public rightClickBoard(xy: XYCoordinates, currentPlayer: GamePlayer) {
+        console.log("Board was right-clicked");
+        this._userClickController.clickBoard(xy, currentPlayer, this.tiles, this._canvasWidth);
+    }
+
 
 
 }

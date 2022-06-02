@@ -10,11 +10,21 @@
 
 .left-column{
     width: 200px;
-    border: 2px solid red;
     height: 771px ;
     margin-right: 10px;
     border-radius: 5px;
+    background-color: white;
 }
+.right-column{
+    width: 200px;
+    height: 771px;
+    margin-left: 10px;
+    border-radius: 5px;
+    display:flex;
+    flex-direction: column-reverse;
+    background-color: white;
+}
+
 .player-swatches{
     display:flex;
     flex-direction: row;

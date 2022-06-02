@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import { GameBoard } from './game-board.class';
 import { GamePlayer } from '../game-player/game-player.class';
 import { TileHexagon } from './tiles/tile-hexagon';
@@ -20,6 +20,10 @@ export class GameBoardComponent implements OnInit {
   private _canvasContext: CanvasRenderingContext2D = {} as CanvasRenderingContext2D;
   @ViewChild('gameboard', { static: true }) private _canvas: ElementRef = {} as ElementRef;
 
+  @HostListener('contextmenu', ['$event']) onRightClick(event: MouseEvent) {
+    event.preventDefault();
+  }
+
   public get game(): Game { return this._gameService.game; }
   public get board(): GameBoard { return this.game.board; }
   public get players(): GamePlayer[] { return this.game.players; }
@@ -27,41 +31,45 @@ export class GameBoardComponent implements OnInit {
   public get canvasWidth(): number { return this.game.configuration.canvasWidth; }
   public get canvasHeight(): number { return this.game.configuration.canvasHeight; }
   public get passButtonEnabled(): boolean { return !this.game.currentPlayer.isBot; }
+
   ngOnInit(): void {
     const context = this._canvas.nativeElement.getContext('2d');
     if (context) {
       this._canvasContext = context;
       this._drawGameBoard();
-      // const sub = this._board.currentTurn$.subscribe((tick) => {
-      //   this.drawGameBoard();
-      // }) 
+      const sub = this.game.currentTurn$.subscribe((tick) => {
+        this._drawGameBoard();
+      });
     }
   }
 
   public onClickCanvas($event: MouseEvent) {
+    const isLeftClick: boolean = $event.button === 0;
+    const isMiddleClick: boolean = $event.button === 1;
+    const isRightClick: boolean = $event.button === 2;
     const canvasElement = this._canvas.nativeElement;
     const canvasOriginX = canvasElement.offsetLeft + canvasElement.clientLeft;
     const canvasOriginY = canvasElement.offsetTop + canvasElement.clientTop;
     const clickX = $event.clientX - canvasOriginX;
     const clickY = $event.clientY - canvasOriginY;
     const clickPoint: XYCoordinates = { x: clickX, y: clickY };
-    this.board.clickBoard(clickPoint);
+    if(isLeftClick){
+      this.board.leftClickBoard(clickPoint, this.currentPlayer);
+    }else if(isRightClick){
+      this.board.rightClickBoard(clickPoint, this.currentPlayer);
+    }
     this._drawGameBoard();
+
   }
 
 
   /**
-   * Every time drawGameBoard() is called, we clear the image and redraw each tile.
+   * Every time drawGameBoard() is called, we clear the image and redraw each tile
    */
   private _drawGameBoard() {
     this._clearBoard();
     this.board.tiles.forEach(tile => {
       this._drawHexagon(tile, true, false);
-      // if (tile.centerPoint === this._gameBoard.mouseOverTile?.centerPoint) {
-      //   this.drawTile(tile, true, true);
-      // } else {
-      //   this.drawTile(tile, false, true);
-      // }
     });
   }
 
