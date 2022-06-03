@@ -22,6 +22,7 @@ export class Game {
     public get currentTurn(): number { return this._state.currentTurn; }
     public get tiles(): Tile[] { return this._board.tiles; }
 
+    public get selectedTile$(): Observable<Tile> { return this._board.selectedTile$; }
 
     constructor(state: GameState) {
         this._state = state;
@@ -31,8 +32,8 @@ export class Game {
 
 
 
-    public onClickPass() {
-
+    public onClickEndTurn() {
+        this._state.incrementPlayer();
     }
 
 }

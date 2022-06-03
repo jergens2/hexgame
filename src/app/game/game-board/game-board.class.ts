@@ -1,4 +1,4 @@
-import { Subscription } from "rxjs";
+import { Observable, Subscription } from "rxjs";
 import { TileHexagon } from "./tiles/tile-hexagon";
 import { XYCoordinates } from "./tiles/xy-coordinates.class";
 import { TileBuilder } from "./tiles/tile-builder.class";
@@ -20,10 +20,11 @@ export class GameBoard {
 
     public get tiles(): Tile[] { return this._tiles; }
 
-
     private _mouseOverTile: TileHexagon | null = null;
-    public get mouseOverTile(): TileHexagon | null { return this._mouseOverTile; }
+    private _selectedTile: Tile | null = null;
 
+    public get selectedTile$(): Observable<Tile> { return this._userClickController.selectedTile$; }
+    
     constructor(gameState: GameState) {
         this._canvasWidth = gameState.canvasWidth;
         this._canvasHeight = gameState.canvasHeight;
@@ -35,7 +36,7 @@ export class GameBoard {
         GameBoardInitializer.setPlayerPositions(this.tiles, gameState.players);
         GameBoardInitializer.placeLeaderUnits(this.tiles, gameState.players);
         this._userClickController = new UserClickController();
-        gameState.currentTurn$.subscribe(turn => {this._userClickController.reset(); });
+        gameState.currentPlayer$.subscribe(player => {this._userClickController.reset(); });
     }
         
     /** 

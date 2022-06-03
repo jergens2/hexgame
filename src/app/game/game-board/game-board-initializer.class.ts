@@ -53,7 +53,7 @@ export class GameBoardInitializer{
 
     public static placeLeaderUnits(tiles: Tile[], players: GamePlayer[]) {
         players.forEach(player => {
-            const playerTiles = tiles.filter(tile => tile.tileOwner === player);
+            const playerTiles = tiles.filter(tile => tile.owner === player);
             const randomIndex = Math.floor(Math.random() * (playerTiles.length - 1));
             const leader: LeaderUnit = new LeaderUnit(player);
             playerTiles[randomIndex].placeLeader(leader);

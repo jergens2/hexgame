@@ -40,6 +40,7 @@ export class GameState {
 
     private _incrementTurn() {
         this._currentTurn$.next(this.currentTurn + 1);
+        console.log(this.currentTurn + " <-- current turn")
     }
 
 }

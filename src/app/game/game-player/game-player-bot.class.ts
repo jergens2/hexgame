@@ -13,7 +13,7 @@ export class GamePlayerBot extends GamePlayer {
         const ownedTiles: Tile[] = tiles.filter(tile => {
             let isOwned: boolean = false;
             if(tile.isOwned){
-                if(tile.tileOwner.id === this.id){
+                if(tile.owner.id === this.id){
                     isOwned = true;
                 }
             }
@@ -28,7 +28,7 @@ export class GamePlayerBot extends GamePlayer {
             const energyTiles: Tile[] = [];
             tiles.forEach(tile => {
                 if(tile.isOwned){
-                    if(tile.tileOwner === this){
+                    if(tile.owner === this){
                         if(tile.tileState.energyValue > 0){
                             energyTiles.push(tile);
                         }

@@ -5,6 +5,8 @@ import { TileProductionMode } from "./tile-production-mode.enum";
 import { TileState } from "./tile-state.class";
 import { TileActionController } from "./tile-action-controller.class";
 import { LeaderUnit } from "../units/leader-unit.class";
+import { TileAppearanceController } from "./tile-appearance-controller.class";
+import { TileAppearance } from "./tile-appearance.interface";
 
 export class Tile{ 
 
@@ -15,16 +17,19 @@ export class Tile{
     private _tileState: TileState;
 
     public get tileState(): TileState { return this._tileState; }
-    public get tileOwner(): GamePlayer { return this.tileState.ownedBy; }
+    public get owner(): GamePlayer { return this.tileState.ownedBy; }
     public get isOwned(): boolean { return !this.tileState.isNeutral; }
     public get isNeutral(): boolean { return this.tileState.isNeutral; }
     public get isDisabled(): boolean { return this.tileState.isDisabled; }
     public get isPowerTile(): boolean { return this.tileState.isPowerSource; }
     public get isSelected(): boolean { return this.tileState.isSelected; }
+    public isSame(tile: TileHexagon): boolean { return this.hexagon.isSame(tile); }
 
     public get units(): Unit[] { return this._units; }
     public get productionMode(): TileProductionMode { return this._productionMode; }
     public get hexagon(): TileHexagon { return this._hexagon; }
+    public get appearance(): TileAppearance { return TileAppearanceController.getAppearance(this); }
+
 
     public placeLeader(leader: LeaderUnit): void { TileActionController.placeLeader(leader, this.units, this.tileState); }
     public selectTile(): void { TileActionController.selectTile(this.tileState); }
@@ -38,6 +43,7 @@ export class Tile{
     public spreadtoOwnedTile(attacker: GamePlayer, attackingTile: Tile): void { TileActionController.spreadtoOwnedTile(attacker, attackingTile, this.tileState); }
     public disable(): void { TileActionController.disable(this.tileState); }
     public setPowerTile(): void { TileActionController.setPowerTile(this.tileState); }
+    
 
 
     constructor(hexagon: TileHexagon){
@@ -47,7 +53,6 @@ export class Tile{
             isDisabled: false,
             isPowerSource: false,
             ownedBy: new GamePlayer('', '', '', true),
-            hasLeader: false,
             energyValue: 0,
             energyGrowValue: 0.01,
             isSelected: false,

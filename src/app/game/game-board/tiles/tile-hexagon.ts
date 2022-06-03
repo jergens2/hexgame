@@ -67,6 +67,7 @@ export class TileHexagon {
     public get centerPoint(): XYCoordinates { return this._centerPoint; }
     public get hexCol(): number { return this._hexCol; }
     public get hexRow(): number { return this._hexRow; }
+    public get hexCoordinates(): XYCoordinates { return {x: this.hexCol, y: this.hexRow}; }
 
     public isSame(otherTile: TileHexagon): boolean {
         return otherTile.centerPoint.x === this.centerPoint.x && otherTile.centerPoint.y === this.centerPoint.y;

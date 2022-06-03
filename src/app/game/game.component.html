@@ -18,6 +18,11 @@
     <app-game-board></app-game-board>
 
     <div class="right-column">
+        <div>
+            <div *ngIf="selectedTile">
+                {{ selectedTile.owner.name }}
+            </div>
+        </div>
         <div class="pass-button-container">
             <button class="pass-button" enabled="passButtonEnabled" (click)="onClickEndTurnButton()">
                 End Turn
@@ -25,4 +30,4 @@
         </div>
     </div>
 
-</div>
+</div>  

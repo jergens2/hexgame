@@ -33,7 +33,7 @@ export class TileFinder {
         const ownedNeighbours: Tile[] = [];
         neighbours.forEach(neighbour => {
             if (neighbour.isOwned) {
-                if (neighbour.tileOwner === ownedByTile.tileOwner) {
+                if (neighbour.owner === ownedByTile.owner) {
                     ownedNeighbours.push(neighbour);
                 }
             }
@@ -55,7 +55,7 @@ export class TileFinder {
         const ownedNeighbours: Tile[] = [];
         neighbours.forEach(neighbour => {
             if (neighbour.isOwned) {
-                if (neighbour.tileOwner !== neighboursOfTile.tileOwner) {
+                if (neighbour.owner !== neighboursOfTile.owner) {
                     ownedNeighbours.push(neighbour);
                 }
             }

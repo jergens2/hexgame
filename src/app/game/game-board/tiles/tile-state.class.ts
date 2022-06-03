@@ -5,7 +5,6 @@ export interface TileState {
     isDisabled: boolean;
     isPowerSource: boolean;
     ownedBy: GamePlayer;
-    hasLeader: boolean;
     energyValue: number;
     energyGrowValue: number;
     isSelected: boolean;

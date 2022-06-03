@@ -4,7 +4,8 @@ import { GamePlayer } from "../../game-player/game-player.class";
 export abstract class Unit{
 
     private _ownedBy: GamePlayer;
-    public get ownedBy(): GamePlayer{ return this._ownedBy; }
+    public get ownedBy(): GamePlayer { return this._ownedBy; }
+    public abstract get isLeader(): boolean;
     /**
      * 
      * An abstract class is one that cannot be instantiated

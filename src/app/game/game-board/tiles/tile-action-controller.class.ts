@@ -8,8 +8,8 @@ export class TileActionController{
 
     public static placeLeader(leader: LeaderUnit, units: Unit[], tileState: TileState) {
         this.addUnit(leader, units);
-        tileState.hasLeader = true;
         tileState.energyGrowValue += 1;
+        console.log("Leader added")
     }
 
     public static selectTile(tileState: TileState) {
