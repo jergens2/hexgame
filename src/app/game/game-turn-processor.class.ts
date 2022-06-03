@@ -8,6 +8,15 @@ export class GameTurnProcessor {
 
     constructor() {}
 
+    public static startGame(){ 
+            // this._state.currentPlayer$.subscribe(player => {
+            //     if (player.isBot) {
+            //     }
+            // });
+            // this.currentTurn$.subscribe(turn => {
+    
+            // });
+    }
 
     /** Process click and return a boolean value indicating whether or not the click is the end of the player's turn */
     public processClick(currentPlayer: GamePlayer, clickedTile: TileHexagon, selectedTile: TileHexagon | undefined, allTiles: TileHexagon[]): boolean {

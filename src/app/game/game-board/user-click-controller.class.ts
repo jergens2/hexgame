@@ -20,9 +20,8 @@ export class UserClickController {
         this._userClickMode = UserClickMode.SELECT_TILES;
     }
 
-    public clickBoard(xy: XYCoordinates, currentPlayer: GamePlayer, tiles: Tile[], canvasWidth: number) {
+    public leftClick(xy: XYCoordinates, currentPlayer: GamePlayer, tiles: Tile[], canvasWidth: number) {
         if (currentPlayer.isHuman) {
-
             let closestTile: Tile = tiles[0];
             let smallestDif = canvasWidth;
             tiles.forEach(tile => {
@@ -34,9 +33,17 @@ export class UserClickController {
                 }
             });
             closestTile.selectTile();
-
         } else {
             this._userClickMode = UserClickMode.VIEW_TILES;
+        }
+    }
+
+    public rightClick(xy: XYCoordinates, currentPlayer: GamePlayer, tiles: Tile[], canvasWidth: number) {
+        if (currentPlayer.isHuman) {
+            let selectedTile: Tile | undefined = tiles.find(tile => tile.isSelected);
+            if(selectedTile !== undefined){
+                console.log("ooh yea")
+            }
         }
     }
 }

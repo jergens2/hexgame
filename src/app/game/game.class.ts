@@ -3,6 +3,7 @@ import { GameBoard } from "./game-board/game-board.class";
 import { Tile } from "./game-board/tiles/tile.class";
 import { GameState } from "./game-state.class";
 import { GamePlayer } from "./game-player/game-player.class";
+import { GameTurnProcessor } from "./game-turn-processor.class";
 
 export class Game {
 
@@ -25,18 +26,10 @@ export class Game {
     constructor(state: GameState) {
         this._state = state;
         this._board = new GameBoard(this._state);
-        this._startGame();
     }
+    public startGame(){ GameTurnProcessor.startGame(); }
 
-    private _startGame() {
-        this._state.currentPlayer$.subscribe(player => {
-            if (player.isBot) {
-            }
-        });
-        this.currentTurn$.subscribe(turn => {
 
-        });
-    }
 
     public onClickPass() {
 

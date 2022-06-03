@@ -1,7 +1,7 @@
 import { Tile } from "./tile.class";
 import { XYCoordinates } from "./xy-coordinates.class";
 
-export class TileNeighbourFinder {
+export class TileFinder {
     /**
      * Horizontal Hexagon
      * p is point
@@ -19,31 +19,7 @@ export class TileNeighbourFinder {
      *                  n3 (-0, +1)
      */
 
-    
-    private static _getNeighbourCoordinatesOf(tile: Tile): XYCoordinates[] {
-        const tilePositionX = tile.hexagon.hexRow;
-        const tilePositionY = tile.hexagon.hexCol;
-        return [
-            {x: tilePositionX-0, y: tilePositionY-1},
-            {x: tilePositionX+1, y: tilePositionY-0},
-            {x: tilePositionX+1, y: tilePositionY+1},
-            {x: tilePositionX-0, y: tilePositionY+1},
-            {x: tilePositionX-1, y: tilePositionY+1},
-            {x: tilePositionX-1, y: tilePositionY-0},
-        ];
-    }
-    private static _tileAt(coordinates: XYCoordinates, allTiles: Tile[]): Tile | undefined{
-        return allTiles.find(tile => tile.hexagon.hexRow === coordinates.x && tile.hexagon.hexCol === coordinates.y);
-    }
-    private static _getValidNeighbours(neighbourTiles: (Tile | undefined)[]): Tile[] {
-        const validNeighbours: Tile[] = [];
-        neighbourTiles.forEach(neighbour => {
-            if(neighbour !== undefined){
-                validNeighbours.push(neighbour);
-            }
-        })
-        return validNeighbours;
-    }
+
 
     public static getNeighboursOf(tile: Tile, allTiles: Tile[]): Tile[] {
         const neighbourCoords = this._getNeighbourCoordinatesOf(tile);
@@ -86,4 +62,34 @@ export class TileNeighbourFinder {
         });
         return ownedNeighbours;
     }
+
+
+    private static _getNeighbourCoordinatesOf(tile: Tile): XYCoordinates[] {
+        const tilePositionX = tile.hexagon.hexRow;
+        const tilePositionY = tile.hexagon.hexCol;
+        return [
+            { x: tilePositionX - 0, y: tilePositionY - 1 },
+            { x: tilePositionX + 1, y: tilePositionY - 0 },
+            { x: tilePositionX + 1, y: tilePositionY + 1 },
+            { x: tilePositionX - 0, y: tilePositionY + 1 },
+            { x: tilePositionX - 1, y: tilePositionY + 1 },
+            { x: tilePositionX - 1, y: tilePositionY - 0 },
+        ];
+    }
+    private static _tileAt(coordinates: XYCoordinates, allTiles: Tile[]): Tile | undefined {
+        return allTiles.find(tile => tile.hexagon.hexRow === coordinates.x && tile.hexagon.hexCol === coordinates.y);
+    }
+    private static _getValidNeighbours(neighbourTiles: (Tile | undefined)[]): Tile[] {
+        const validNeighbours: Tile[] = [];
+        neighbourTiles.forEach(neighbour => {
+            if (neighbour !== undefined) {
+                validNeighbours.push(neighbour);
+            }
+        })
+        return validNeighbours;
+    }
+
+
+
+
 }

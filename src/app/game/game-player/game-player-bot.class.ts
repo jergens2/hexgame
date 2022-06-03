@@ -1,4 +1,4 @@
-import { TileNeighbourFinder } from "../game-board/tiles/tile-neighbour-finder.class";
+import { TileFinder } from "../game-board/tiles/tile-finder.class";
 import { Tile } from "../game-board/tiles/tile.class";
 import { LeaderUnit } from "../game-board/units/leader-unit.class";
 import { GamePlayer } from "./game-player.class";
@@ -48,9 +48,9 @@ export class GamePlayerBot extends GamePlayer {
                 let actionTaken: boolean = false;
                 let index = 0;
                 while(actionTaken === false && index < sortedTiles.length){
-                    const neutrals: Tile[] = TileNeighbourFinder.getNeutralNeighboursOf(sortedTiles[index], tiles); 
-                    const opponents: Tile[] = TileNeighbourFinder.getOpponentNeighboursOf(sortedTiles[index], tiles); 
-                    const ownedTiles: Tile[] = TileNeighbourFinder.getOwnedNeighboursOf(sortedTiles[index], tiles); 
+                    const neutrals: Tile[] = TileFinder.getNeutralNeighboursOf(sortedTiles[index], tiles); 
+                    const opponents: Tile[] = TileFinder.getOpponentNeighboursOf(sortedTiles[index], tiles); 
+                    const ownedTiles: Tile[] = TileFinder.getOwnedNeighboursOf(sortedTiles[index], tiles); 
                     if(neutrals.length > 0){
                         this._getRandomTile(neutrals).takeNeutralTile(this, sortedTiles[index]);
                         actionTaken = true;

@@ -42,12 +42,10 @@ export class GameBoard {
      * The board is clicked by the current non-bot player
      */
     public leftClickBoard(xy: XYCoordinates, currentPlayer: GamePlayer) {
-        console.log("Board was left-clicked");
-        this._userClickController.clickBoard(xy, currentPlayer, this.tiles, this._canvasWidth);
+        this._userClickController.leftClick(xy, currentPlayer, this.tiles, this._canvasWidth);
     }
     public rightClickBoard(xy: XYCoordinates, currentPlayer: GamePlayer) {
-        console.log("Board was right-clicked");
-        this._userClickController.clickBoard(xy, currentPlayer, this.tiles, this._canvasWidth);
+        this._userClickController.rightClick(xy, currentPlayer, this.tiles, this._canvasWidth);
     }
 
 

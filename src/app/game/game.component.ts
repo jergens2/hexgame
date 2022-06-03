@@ -31,6 +31,7 @@ export class GameComponent implements OnInit {
     const state = this._buildGameState();
     const game = new Game(state);
     this._gameService.setGame(game);
+    game.startGame();
   }  
 
   public onClickEndTurnButton(){
