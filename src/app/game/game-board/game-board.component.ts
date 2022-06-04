@@ -60,7 +60,6 @@ export class GameBoardComponent implements OnInit {
       this.board.rightClickBoard(clickPoint, this.currentPlayer);
     }
     this._drawGameBoard();
-
   }
 
 
@@ -69,9 +68,7 @@ export class GameBoardComponent implements OnInit {
    */
   private _drawGameBoard() {
     this._clearBoard();
-    this.board.tiles.forEach(tile => {
-      this._drawHexagon(tile, true, false);
-    });
+    this.board.tiles.forEach(tile => this._drawHexagon(tile));
   }
 
   public onMouseMove($event: MouseEvent) {
@@ -90,7 +87,7 @@ export class GameBoardComponent implements OnInit {
     this._canvasContext.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
   }
 
-  private _drawHexagon(tile: Tile, doFill: boolean, doStroke: boolean): void {
+  private _drawHexagon(tile: Tile): void {
     const hexagon: TileHexagon = tile.hexagon;
     const appearance: TileAppearance = tile.appearance;
     this._canvasContext.beginPath();
@@ -105,10 +102,16 @@ export class GameBoardComponent implements OnInit {
     this._canvasContext.font = appearance.font;
     this._canvasContext.textAlign = appearance.textAlign;
     this._canvasContext.textBaseline = appearance.textBaseline;
-    this._canvasContext.fillStyle = appearance.fillStyle;
     this._canvasContext.strokeStyle = appearance.strokeStyle;
     this._canvasContext.lineWidth = appearance.lineWidth;
     this._canvasContext.stroke();
     this._canvasContext.fill();
+    if(appearance.text !== ''){
+      const x = tile.hexagon.centerPoint.x;
+      const y = tile.hexagon.centerPoint.y;
+      this._canvasContext.fillStyle = 'black';
+      this._canvasContext.fillText(appearance.text, x, y);
+    }
+    
   }
 }

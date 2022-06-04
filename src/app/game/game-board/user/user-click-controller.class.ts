@@ -34,7 +34,7 @@ export class UserClickController {
                     if(isNeighbour){
                         TileActionController.attackTile(selectedTile, rightClickedTile);
                     }else{
-                        console.log("Is not neighbour")
+                        //not a neighbour, invalid attack
                     }
                 }
 

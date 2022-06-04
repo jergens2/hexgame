@@ -5,6 +5,7 @@ export class TileAppearanceController{
 
     public static getAppearance(tile: Tile): TileAppearance{
         const appearance: TileAppearance = {
+            text: '',
             font: '8px Arial',
             textAlign: 'center',
             textBaseline: 'middle',
@@ -39,6 +40,9 @@ export class TileAppearanceController{
             }
             if(tile.isSelected){
 
+            }
+            if(tile.unitController.soldiersCount > 0){
+                appearance.text = String(tile.unitController.soldiersCount);
             }
         }       
         return appearance;
