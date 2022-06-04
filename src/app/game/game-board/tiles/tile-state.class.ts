@@ -1,14 +1,13 @@
 import { GamePlayer } from "../../game-player/game-player.class";
+import { TileProductionMode } from "./tile-production-mode.enum";
 
 export interface TileState {
     isNeutral: boolean;
     isDisabled: boolean;
     isPowerSource: boolean;
     ownedBy: GamePlayer;
-    energyValue: number;
-    energyGrowValue: number;
     isSelected: boolean;
-    // powerValue: number;
-    // powerLevel: number;
-    // growthAccumulation: number;
+    productionRate: number;
+    accumulatedProduction: number;
+    productionMode: TileProductionMode;
 }

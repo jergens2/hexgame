@@ -5,8 +5,8 @@ import { TileBuilder } from "./tiles/tile-builder.class";
 import { Tile } from "./tiles/tile.class";
 import { GameState } from "../game-state.class";
 import { GameBoardInitializer } from "./game-board-initializer.class";
-import { UserClickMode } from "./user-click-mode.enum";
-import { UserClickController } from "./user-click-controller.class";
+import { UserClickMode } from "./user/user-click-mode.enum";
+import { UserClickController } from "./user/user-click-controller.class";
 import { GamePlayer } from "../game-player/game-player.class";
 
 export class GameBoard {
@@ -16,14 +16,13 @@ export class GameBoard {
     private _canvasHeight: number;
     private _tileRadius: number;
     private _tileBuffer: number;
-    private _userClickController: UserClickController;
 
     public get tiles(): Tile[] { return this._tiles; }
-
-    private _mouseOverTile: TileHexagon | null = null;
-    private _selectedTile: Tile | null = null;
-
-    public get selectedTile$(): Observable<Tile> { return this._userClickController.selectedTile$; }
+    public get canvasWidth(): number { return this._canvasWidth; }
+    public get canvasHeight(): number { return this._canvasHeight; }
+    public get tileRadius(): number{ return this._tileRadius; }
+    public get tileBuffer(): number { return this._tileBuffer; }
+    public get selectedTile(): Tile | undefined { return UserClickController.getSelectedTile(this.tiles); }
     
     constructor(gameState: GameState) {
         this._canvasWidth = gameState.canvasWidth;
@@ -35,18 +34,19 @@ export class GameBoard {
         GameBoardInitializer.setPowerTiles(this.tiles, gameState.tilePoweredCount);
         GameBoardInitializer.setPlayerPositions(this.tiles, gameState.players);
         GameBoardInitializer.placeLeaderUnits(this.tiles, gameState.players);
-        this._userClickController = new UserClickController();
-        gameState.currentPlayer$.subscribe(player => {this._userClickController.reset(); });
+        gameState.currentTurn$.subscribe(turn => {
+            this._tiles.forEach(tile => tile.evaluateProduction())
+        });
     }
         
     /** 
      * The board is clicked by the current non-bot player
      */
     public leftClickBoard(xy: XYCoordinates, currentPlayer: GamePlayer) {
-        this._userClickController.leftClick(xy, currentPlayer, this.tiles, this._canvasWidth);
+        UserClickController.leftClick(xy, currentPlayer, this);
     }
     public rightClickBoard(xy: XYCoordinates, currentPlayer: GamePlayer) {
-        this._userClickController.rightClick(xy, currentPlayer, this.tiles, this._canvasWidth);
+        UserClickController.rightClick(xy, currentPlayer, this);
     }
 
 

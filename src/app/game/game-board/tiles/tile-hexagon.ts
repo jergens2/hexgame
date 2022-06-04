@@ -82,7 +82,7 @@ export class TileHexagon {
     }
 
     public toString(): string {
-        return this.hexRow + ', ' + this.hexCol;
+        return this.hexCol + ', ' + this.hexRow;
     }
 
     private _fillColor = 'rgb(' + 250 + ', ' + 250 + ', ' + 250 + ')';

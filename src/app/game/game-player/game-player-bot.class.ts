@@ -25,57 +25,57 @@ export class GamePlayerBot extends GamePlayer {
             const leader = new LeaderUnit(this);
             ownedTiles[randomIndex].placeLeader(leader);
         }else{
-            const energyTiles: Tile[] = [];
-            tiles.forEach(tile => {
-                if(tile.isOwned){
-                    if(tile.owner === this){
-                        if(tile.tileState.energyValue > 0){
-                            energyTiles.push(tile);
-                        }
-                    }
-                }
-            });
-            const sortedTiles = energyTiles.sort((t1, t2)=>{
-                if(t1.tileState.energyValue > t2.tileState.energyValue){
-                    return -1;
-                }else if(t1.tileState.energyValue < t2.tileState.energyValue){
-                    return 1;
-                }else{
-                    return 0;
-                }
-            });
-            if(sortedTiles.length > 0){
-                let actionTaken: boolean = false;
-                let index = 0;
-                while(actionTaken === false && index < sortedTiles.length){
-                    const neutrals: Tile[] = TileFinder.getNeutralNeighboursOf(sortedTiles[index], tiles); 
-                    const opponents: Tile[] = TileFinder.getOpponentNeighboursOf(sortedTiles[index], tiles); 
-                    const ownedTiles: Tile[] = TileFinder.getOwnedNeighboursOf(sortedTiles[index], tiles); 
-                    if(neutrals.length > 0){
-                        this._getRandomTile(neutrals).takeNeutralTile(this, sortedTiles[index]);
-                        actionTaken = true;
-                    }else if(opponents.length > 0){
-                        const weakestOpponent = opponents.sort((o1, o2)=>{
-                            if(o1.tileState.energyValue < o2.tileState.energyValue){
-                                return -1;
-                            }else if(o1.tileState.energyValue > o2.tileState.energyValue){
-                                return 1;
-                            }else{
-                                return 0;
-                            }
-                        })[0];
-                        if(sortedTiles[index].tileState.energyValue > (weakestOpponent.tileState.energyValue+1)){
-                            weakestOpponent.attackOwnedTile(this, sortedTiles[index]);
-                        }
-                        actionTaken = true;
-                    }else if(ownedTiles.length > 0){
-                        this._getRandomTile(ownedTiles).spreadtoOwnedTile(this, sortedTiles[index])
-                    }else{
-                        console.log("No action taken");
-                    }
-                    index++;
-                }
-            }
+            // const energyTiles: Tile[] = [];
+            // tiles.forEach(tile => {
+            //     if(tile.isOwned){
+            //         if(tile.owner === this){
+            //             if(tile.tileState.energyValue > 0){
+            //                 energyTiles.push(tile);
+            //             }
+            //         }
+            //     }
+            // });
+            // const sortedTiles = energyTiles.sort((t1, t2)=>{
+            //     if(t1.tileState.energyValue > t2.tileState.energyValue){
+            //         return -1;
+            //     }else if(t1.tileState.energyValue < t2.tileState.energyValue){
+            //         return 1;
+            //     }else{
+            //         return 0;
+            //     }
+            // });
+            // if(sortedTiles.length > 0){
+            //     let actionTaken: boolean = false;
+            //     let index = 0;
+                // while(actionTaken === false && index < sortedTiles.length){
+                //     const neutrals: Tile[] = TileFinder.getNeutralNeighboursOf(sortedTiles[index], tiles); 
+                //     const opponents: Tile[] = TileFinder.getOpponentNeighboursOf(sortedTiles[index], tiles); 
+                //     const ownedTiles: Tile[] = TileFinder.getOwnedNeighboursOf(sortedTiles[index], tiles); 
+                //     if(neutrals.length > 0){
+                //         this._getRandomTile(neutrals).takeNeutralTile(this, sortedTiles[index]);
+                //         actionTaken = true;
+                //     }else if(opponents.length > 0){
+                //         const weakestOpponent = opponents.sort((o1, o2)=>{
+                //             if(o1.tileState.energyValue < o2.tileState.energyValue){
+                //                 return -1;
+                //             }else if(o1.tileState.energyValue > o2.tileState.energyValue){
+                //                 return 1;
+                //             }else{
+                //                 return 0;
+                //             }
+                //         })[0];
+                //         if(sortedTiles[index].tileState.energyValue > (weakestOpponent.tileState.energyValue+1)){
+                //             weakestOpponent.attackOwnedTile(this, sortedTiles[index]);
+                //         }
+                //         actionTaken = true;
+                //     }else if(ownedTiles.length > 0){
+                //         this._getRandomTile(ownedTiles).spreadtoOwnedTile(this, sortedTiles[index])
+                //     }else{
+                //         console.log("No action taken");
+                //     }
+                //     index++;
+                // }
+            // }
         }
     }
 

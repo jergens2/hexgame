@@ -1,5 +1,8 @@
 <div class="game-root">
     <div class="left-column">
+        <div class="current-turn">
+            Turn {{ currentTurn }}
+        </div>
         <div class="current-player" [ngStyle]="currentPlayerNgStyle">
             {{ currentPlayer.name }} 's turn
         </div>
@@ -19,8 +22,25 @@
 
     <div class="right-column">
         <div>
-            <div *ngIf="selectedTile">
-                {{ selectedTile.owner.name }}
+            <div *ngIf="selectedTile" style="display:flex;flex-direction: column;">
+                <div>
+                    Tile owner: {{ selectedTile.owner.name }}
+                </div>
+                <div>
+                    Col, Row (X, Y): {{ selectedTile.hexagon }} 
+                </div>
+                <div>
+                    Accumulated Production: {{ selectedTile.accumulatedProduction }}
+                </div>
+                <div>
+                    Production Rate: {{ selectedTile.productionRate }}
+                </div>
+                <div style="display:flex;flex-direction: column;">
+                    <div>Units: {{ selectedTile.unitController.unitCount }}</div>
+                    <div *ngFor="let unit of selectedTile.unitController.units">
+                        {{ unit.unitType }}
+                    </div>
+                </div>
             </div>
         </div>
         <div class="pass-button-container">

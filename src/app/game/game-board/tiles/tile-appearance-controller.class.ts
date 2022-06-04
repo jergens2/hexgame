@@ -27,7 +27,7 @@ export class TileAppearanceController{
             appearance.strokeStyle = tile.owner.colorSwatch[0];
             appearance.lineWidth = 2;
             let hasLeader: boolean = false;
-            tile.units.forEach(tile => {
+            tile.unitController.units.forEach(tile => {
                 if(tile.isLeader){ 
                     hasLeader = true;
                 }

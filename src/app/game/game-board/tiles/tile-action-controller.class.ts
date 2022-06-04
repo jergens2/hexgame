@@ -1,16 +1,8 @@
 import { GamePlayer } from "../../game-player/game-player.class";
-import { LeaderUnit } from "../units/leader-unit.class";
-import { Unit } from "../units/unit.class";
 import { TileState } from "./tile-state.class";
 import { Tile } from "./tile.class";
 
 export class TileActionController{
-
-    public static placeLeader(leader: LeaderUnit, units: Unit[], tileState: TileState) {
-        this.addUnit(leader, units);
-        tileState.energyGrowValue += 1;
-        console.log("Leader added")
-    }
 
     public static selectTile(tileState: TileState) {
         tileState.isSelected = true;
@@ -30,54 +22,38 @@ export class TileActionController{
         }
         return isValid;
     }
-    public static grow(tileState: TileState) {
-        if (tileState.energyGrowValue > 0) {
-            tileState.energyValue += tileState.energyGrowValue;
-        }
+    public static grow(tileState: TileState) {}
+
+    public static changeOwnership(tile: Tile, owner: GamePlayer) {
+        tile.tileState.ownedBy = owner;
+        tile.tileState.isNeutral = false;
     }
 
-    public static addUnit(unit: Unit, units: Unit[]){
-        units.push(unit);
-    }
-
-
-    public static changeOwnership(player: GamePlayer, tileState: TileState) {
-        tileState.ownedBy = player;
-        tileState.isNeutral = false;
-        // this._fillColor = player.baseColor;
-    }
-
-    public static takeNeutralTile(attacker: GamePlayer, attackingTile: Tile, tileState: TileState) {
-        this.attackOwnedTile(attacker, attackingTile, tileState);
-    }
-
-    public static attackOwnedTile(attacker: GamePlayer, attackingTile: Tile, tileState: TileState) {
-        const attackingEnergy = attackingTile.tileState.energyValue;
-        const defendingEnergy = tileState.energyValue + 1;
-        const outcome = attackingEnergy-defendingEnergy;
-        attackingTile.tileState.energyValue -= attackingEnergy;
-        if(outcome>0){
-            this.changeOwnership(attacker, tileState);
-            tileState.energyGrowValue = 0;
-            tileState.energyValue = outcome;
-        }else if(outcome === 0){
-            const randomOutcome = Math.random();
-            if(randomOutcome >= 0.5){
-                this.changeOwnership(attacker, tileState);
-                tileState.energyGrowValue = 0;
-                tileState.energyValue = 0;
-            }else{
-                // "Draw";
+    public static attackTile(attackingTile: Tile, defendingTile: Tile){
+        const attackingSoldiers = attackingTile.unitController.soldiers;
+        const attacker: GamePlayer = attackingSoldiers[0].ownedBy;
+        const defendingSoldiers = defendingTile.unitController.soldiers;
+        const difference = attackingSoldiers.length - defendingSoldiers.length;
+        const attackerWins = difference > 0;
+        const defenderWins = difference < 0;
+        const tie = difference === 0;
+        if(attackerWins){
+            /** currently nothing in here to control whether a player "attacks" themselves and removes their own leader */
+            this.changeOwnership(defendingTile, attacker);
+            defendingTile.eliminateAllUnits();
+            const attackersEliminated: number = attackingSoldiers.length - difference;
+            if(attackersEliminated > 0){
+                attackingTile.eliminateSoldiers(attackersEliminated);
             }
-        }else if(outcome < 0){
-            // console.log("Loss.  oof.")
+            const transferSoldiers = attackingTile.transferOutSoldiers(difference);
+            defendingTile.transferInSoldiers(transferSoldiers);
+        }else if(defenderWins){
+            attackingTile.eliminateAllSoldiers();
+            defendingTile.eliminateSoldiers(Math.abs(difference));
+        }else if(tie){
+            attackingTile.eliminateAllSoldiers();
+            defendingTile.eliminateAllSoldiers();
         }
-    }
-
-    public static spreadtoOwnedTile(attacker: GamePlayer, attackingTile: Tile, tileState: TileState) {
-        const energySpread = attackingTile.tileState.energyValue;
-        attackingTile.tileState.energyValue = 0;
-        tileState.energyValue += energySpread;
     }
     
     public static disable(tileState: TileState) {

@@ -19,28 +19,21 @@ export class GameComponent implements OnInit {
 
   private _passButtonEnabled: boolean = true;
   private _currentPlayerNgStyle: any = {};
-  private _selectedTile: Tile | undefined;
 
   public get game(): Game { return this._gameService.game; }
   public get gameBoard(): GameBoard { return this.game.board; }
   public get players(): GamePlayer[] { return this.game.players; }
   public get currentPlayer(): GamePlayer { return this.game.currentPlayer; }
+  public get currentTurn(): number { return this.game.currentTurn; }
   public get passButtonEnabled(): boolean { return this._passButtonEnabled; }
-  public get selectedTile(): Tile | undefined { return this._selectedTile; }
+  public get selectedTile(): Tile | undefined { return this.game.selectedTile; }
   public get currentPlayerNgStyle(): any { return this._currentPlayerNgStyle; }
 
   ngOnInit(): void {
     const state = this._buildGameState();
     const game = new Game(state);
     this._gameService.setGame(game);
-    this.game.currentTurn$.subscribe(turn => this._selectedTile = undefined);
-    this.game.selectedTile$.subscribe(tile => {
-      if(tile){
-        this._selectedTile = tile;
-      }else{
-        this._selectedTile = undefined;
-      }
-    })
+    this.game.currentPlayer$.subscribe(player => this._currentPlayerNgStyle = {'background-color': player.baseColor});
     game.startGame();
   }  
 
