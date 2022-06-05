@@ -1,4 +1,4 @@
-import { GamePlayer } from "./game-player/game-player.class";
+import { Player } from "./player/player.class";
 import { TileHexagon } from "./game-board/tiles/tile-hexagon";
 
 /**
@@ -19,7 +19,7 @@ export class GameTurnProcessor {
     }
 
     /** Process click and return a boolean value indicating whether or not the click is the end of the player's turn */
-    public processClick(currentPlayer: GamePlayer, clickedTile: TileHexagon, selectedTile: TileHexagon | undefined, allTiles: TileHexagon[]): boolean {
+    public processClick(currentPlayer: Player, clickedTile: TileHexagon, selectedTile: TileHexagon | undefined, allTiles: TileHexagon[]): boolean {
         // let endOfTurn: boolean = false;
         // if (currentPlayer.playerTurnCount === 0) {
         //     if (clickedTile.tileOwner === currentPlayer) {

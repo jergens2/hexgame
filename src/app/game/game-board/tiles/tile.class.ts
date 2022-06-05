@@ -1,4 +1,4 @@
-import { GamePlayer } from "../../game-player/game-player.class";
+import { Player } from "../../player/player.class";
 import { Unit } from "../units/unit.class";
 import { TileHexagon } from "./tile-hexagon";
 import { TileProductionMode } from "./tile-production-mode.enum";
@@ -19,7 +19,7 @@ export class Tile{
     private _unitController: TileUnitController = new TileUnitController();
 
     public get tileState(): TileState { return this._tileState; }
-    public get owner(): GamePlayer { return this.tileState.ownedBy; }
+    public get owner(): Player { return this.tileState.ownedBy; }
     public get isOwned(): boolean { return !this.tileState.isNeutral; }
     public get isNeutral(): boolean { return this.tileState.isNeutral; }
     public get isDisabled(): boolean { return this.tileState.isDisabled; }
@@ -43,17 +43,19 @@ export class Tile{
     public eliminateSoldiers(count: number): void { return this._unitController.eliminateSoldiers(count); }
     public transferOutSoldiers(count: number): SoldierUnit[] { return this._unitController.transferOutSoldiers(count); }
     public transferInSoldiers(soldiers: SoldierUnit[]): void { return this._unitController.transferInSoldiers(soldiers); }
+    public setUnitsReady(): void { this._unitController.setUnitsReady(); }
 
     public selectTile(): void { TileActionController.selectTile(this.tileState); }
     public deselectTile(): void { TileActionController.deselectTile(this.tileState); }
-    public clickTile(player: GamePlayer): void { TileActionController.clickTile(player, this.tileState.ownedBy); }
-    public grow(): void { TileActionController.grow(this.tileState); }
+    public clickTile(player: Player): void { TileActionController.clickTile(player, this.tileState.ownedBy); }
+    // public grow(): void { TileActionController.grow(this.tileState); }
 
-    public changeOwnership(player: GamePlayer): void { TileActionController.changeOwnership(this, player); }
+    public changeOwnership(player: Player): void { TileActionController.changeOwnership(this, player); }
     public disable(): void { TileActionController.disable(this.tileState); }
     public setPowerTile(): void { TileActionController.setPowerTile(this.tileState); }
     
     public evaluateProduction(): void{ TileProductionController.evaluateProduction(this); }
+
     
     constructor(hexagon: TileHexagon){
         this._hexagon = hexagon;
@@ -61,7 +63,7 @@ export class Tile{
             isNeutral: true,
             isDisabled: false,
             isPowerSource: false,
-            ownedBy: new GamePlayer('', '', '', true),
+            ownedBy: new Player('', '', '', true),
             isSelected: false,
             productionRate: 0,
             accumulatedProduction: 0,

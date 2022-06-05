@@ -5,5 +5,6 @@ export interface TileAppearance{
     textBaseline: "alphabetic" | "bottom" | "hanging" | "ideographic" | "middle" | "top",
     fillStyle: string,
     strokeStyle: string,
+    textStrokeStile: string,
     lineWidth: number,
 }

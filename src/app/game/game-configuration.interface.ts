@@ -1,7 +1,7 @@
-import { GamePlayer } from "./game-player/game-player.class";
+import { Player } from "./player/player.class";
 
 export interface GameConfiguration{
-    players: GamePlayer[], 
+    players: Player[], 
     canvasWidth: number, 
     canvasHeight: number, 
     tileRadius: number, 

@@ -11,7 +11,8 @@ export class TileAppearanceController{
             textBaseline: 'middle',
             fillStyle: 'string',
             strokeStyle: 'string',
-            lineWidth: 2,
+            textStrokeStile: 'string',
+            lineWidth: 4,
         };
         if(tile.isDisabled){
             appearance.lineWidth = 2;
@@ -41,8 +42,13 @@ export class TileAppearanceController{
             if(tile.isSelected){
 
             }
-            if(tile.unitController.soldiersCount > 0){
+            const soldiersCount = tile.unitController.soldiersCount;
+            const readySoldiersCount = tile.unitController.readySoldiersCount;
+            if(soldiersCount > 0){
                 appearance.text = String(tile.unitController.soldiersCount);
+                if(readySoldiersCount < (soldiersCount/2)){
+                    appearance.strokeStyle = 'rgb(148, 0, 0)';
+                }
             }
         }       
         return appearance;

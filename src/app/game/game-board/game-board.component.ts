@@ -1,6 +1,6 @@
 import { Component, ElementRef, HostListener, Input, OnInit, ViewChild } from '@angular/core';
 import { GameBoard } from './game-board.class';
-import { GamePlayer } from '../game-player/game-player.class';
+import { Player } from '../player/player.class';
 import { TileHexagon } from './tiles/tile-hexagon';
 import { XYCoordinates } from './tiles/xy-coordinates.class';
 import { Game } from '../game.class';
@@ -27,8 +27,8 @@ export class GameBoardComponent implements OnInit {
 
   public get game(): Game { return this._gameService.game; }
   public get board(): GameBoard { return this.game.board; }
-  public get players(): GamePlayer[] { return this.game.players; }
-  public get currentPlayer(): GamePlayer { return this.game.currentPlayer }
+  public get players(): Player[] { return this.game.players; }
+  public get currentPlayer(): Player { return this.game.currentPlayer }
   public get canvasWidth(): number { return this.game.configuration.canvasWidth; }
   public get canvasHeight(): number { return this.game.configuration.canvasHeight; }
   public get passButtonEnabled(): boolean { return !this.game.currentPlayer.isBot; }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { GamePlayer } from './game-player/game-player.class';
+import { Player } from './player/player.class';
 import { Game } from './game.class';
 
 @Injectable({
@@ -15,8 +15,8 @@ export class GameService {
 
   public get currentTurn$(): Observable<number> { return this.game.currentTurn$; }
   public get currentTurn(): number { return this.game.currentTurn; }
-  public get currentPlayer$(): Observable<GamePlayer> { return this.game.currentPlayer$; }
-  public get currentPlayer(): GamePlayer { return this.game.currentPlayer; }
+  public get currentPlayer$(): Observable<Player> { return this.game.currentPlayer$; }
+  public get currentPlayer(): Player { return this.game.currentPlayer; }
 
   constructor() { }
 }

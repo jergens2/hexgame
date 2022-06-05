@@ -1,9 +1,9 @@
 import { TileFinder } from "../game-board/tiles/tile-finder.class";
 import { Tile } from "../game-board/tiles/tile.class";
 import { LeaderUnit } from "../game-board/units/leader-unit.class";
-import { GamePlayer } from "./game-player.class";
+import { Player } from "./player.class";
 
-export class GamePlayerBot extends GamePlayer {
+export class BotPlayer extends Player {
     constructor(color: string, name: string, id: string, isBot: boolean = true) {
         super(color, name, id, true);
     }

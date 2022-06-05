@@ -1,6 +1,6 @@
 import { ColorCalculator } from "src/app/color/color-calulator.class";
 
-export class GamePlayer {
+export class Player {
 
     private _id: string;
     private _baseColor: string;

@@ -1,17 +1,17 @@
 import { BehaviorSubject, Observable } from "rxjs";
 import { GameConfiguration } from "./game-configuration.interface";
-import { GamePlayer } from "./game-player/game-player.class";
+import { Player } from "./player/player.class";
 
 export class GameState {
 
     private _configuration: GameConfiguration;
-    private _currentPlayer$: BehaviorSubject<GamePlayer>;
+    private _currentPlayer$: BehaviorSubject<Player>;
     private _currentTurn$: BehaviorSubject<number> = new BehaviorSubject(1);
 
-    public get players(): GamePlayer[] { return this._configuration.players; }
+    public get players(): Player[] { return this._configuration.players; }
     public get playerCount(): number { return this._configuration.players.length; }
-    public get currentPlayer(): GamePlayer { return this._currentPlayer$.getValue(); }
-    public get currentPlayer$(): Observable<GamePlayer> { return this._currentPlayer$.asObservable(); }
+    public get currentPlayer(): Player { return this._currentPlayer$.getValue(); }
+    public get currentPlayer$(): Observable<Player> { return this._currentPlayer$.asObservable(); }
     public get currentTurn(): number { return this._currentTurn$.getValue(); }
     public get currentTurn$(): Observable<number> { return this._currentTurn$.asObservable(); }
     public get canvasWidth(): number { return this._configuration.canvasWidth; }

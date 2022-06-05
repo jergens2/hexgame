@@ -1,11 +1,11 @@
-import { GamePlayerBot } from "./game-player-bot.class";
-import { GamePlayerHuman } from "./game-player-human.class";
-import { GamePlayer } from "./game-player.class";
+import { BotPlayer } from "./bot-player.class";
+import { HumanPlayer } from "./human-player.class";
+import { Player } from "./player.class";
 
-export class GamePlayerBuilder {
+export class PlayerBuilder {
 
 
-    public static buildPlayers(humanCount: number, botCount: number): GamePlayer[] {
+    public static buildPlayers(humanCount: number, botCount: number): Player[] {
         const sampleStartingColors = [
             'rgb(204, 255, 204)',
             'rgb(255, 255, 204)',
@@ -20,7 +20,7 @@ export class GamePlayerBuilder {
          */
         const playerCount = humanCount + botCount;
         if (playerCount <= 6) {
-            const players: GamePlayer[] = [];
+            const players: Player[] = [];
 
             const randomIndex = Math.floor(Math.random() * (sampleStartingColors.length));
             let currentIndex = randomIndex;
@@ -40,9 +40,9 @@ export class GamePlayerBuilder {
                 }
 
                 if (isHuman === true) {
-                    players.push(new GamePlayerHuman(color, name, String(i), true));
+                    players.push(new HumanPlayer(color, name, String(i), true));
                 } else {
-                    players.push(new GamePlayerBot(color, name, String(i), false));
+                    players.push(new BotPlayer(color, name, String(i), false));
                 }
                 playerNumber++;
             }

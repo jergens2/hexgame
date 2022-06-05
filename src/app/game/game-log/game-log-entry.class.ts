@@ -1,15 +1,15 @@
 import { GameState } from "../game-state.class";
-import { GamePlayer } from "../game-player/game-player.class";
+import { Player } from "../player/player.class";
 
 export class GameLogEntry{
     
     private _turnCount: number;
     private _message: string;
-    private _currentPlayer: GamePlayer;
+    private _currentPlayer: Player;
 
     public get message(): string { return this._message; }
     public get turnCount(): number { return this._turnCount; }
-    public get currentPlayer(): GamePlayer { return this._currentPlayer; }
+    public get currentPlayer(): Player { return this._currentPlayer; }
 
     public toString(): string {
         return "Turn " + this.turnCount + "\t" + this.currentPlayer.name + "\t" + this.message; 

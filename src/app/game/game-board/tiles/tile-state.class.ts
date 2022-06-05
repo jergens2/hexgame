@@ -1,11 +1,11 @@
-import { GamePlayer } from "../../game-player/game-player.class";
+import { Player } from "../../player/player.class";
 import { TileProductionMode } from "./tile-production-mode.enum";
 
 export interface TileState {
     isNeutral: boolean;
     isDisabled: boolean;
     isPowerSource: boolean;
-    ownedBy: GamePlayer;
+    ownedBy: Player;
     isSelected: boolean;
     productionRate: number;
     accumulatedProduction: number;

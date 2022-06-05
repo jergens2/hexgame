@@ -7,7 +7,7 @@ import { GameState } from "../game-state.class";
 import { GameBoardInitializer } from "./game-board-initializer.class";
 import { UserClickMode } from "./user/user-click-mode.enum";
 import { UserClickController } from "./user/user-click-controller.class";
-import { GamePlayer } from "../game-player/game-player.class";
+import { Player } from "../player/player.class";
 
 export class GameBoard {
 
@@ -35,17 +35,20 @@ export class GameBoard {
         GameBoardInitializer.setPlayerPositions(this.tiles, gameState.players);
         GameBoardInitializer.placeLeaderUnits(this.tiles, gameState.players);
         gameState.currentTurn$.subscribe(turn => {
-            this._tiles.forEach(tile => tile.evaluateProduction())
+            this._tiles.forEach(tile => {
+                tile.evaluateProduction();
+                tile.setUnitsReady();
+            });
         });
     }
         
     /** 
      * The board is clicked by the current non-bot player
      */
-    public leftClickBoard(xy: XYCoordinates, currentPlayer: GamePlayer) {
+    public leftClickBoard(xy: XYCoordinates, currentPlayer: Player) {
         UserClickController.leftClick(xy, currentPlayer, this);
     }
-    public rightClickBoard(xy: XYCoordinates, currentPlayer: GamePlayer) {
+    public rightClickBoard(xy: XYCoordinates, currentPlayer: Player) {
         UserClickController.rightClick(xy, currentPlayer, this);
     }
 

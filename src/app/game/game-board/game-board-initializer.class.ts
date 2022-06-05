@@ -1,4 +1,4 @@
-import { GamePlayer } from "../game-player/game-player.class";
+import { Player } from "../player/player.class";
 import { Tile } from "./tiles/tile.class";
 import { LeaderUnit } from "./units/leader-unit.class";
 
@@ -6,12 +6,12 @@ export class GameBoardInitializer{
 
     /** Disable some number of tiles on the board */
     public static disableTiles(tiles: Tile[], tileDisabledRate: number){
-        let disableCount: number = Math.floor(tiles.length * tileDisabledRate);
-        while (disableCount > 0) {
-            const randomIndex: number = Math.floor(Math.random() * tiles.length); 
-            tiles[randomIndex].disable();
-            disableCount--;
-        }
+        // let disableCount: number = Math.floor(tiles.length * tileDisabledRate);
+        // while (disableCount > 0) {
+        //     const randomIndex: number = Math.floor(Math.random() * tiles.length); 
+        //     tiles[randomIndex].disable();
+        //     disableCount--;
+        // }
     }
 
     /** Designate some tiles as Power tiles */
@@ -30,7 +30,7 @@ export class GameBoardInitializer{
      * occupy every neutral spot randomly and evenly for each player, sort of like how the board game Risk starts
      * 
      */
-    public static setPlayerPositions(tiles: Tile[], players: GamePlayer[]) {
+    public static setPlayerPositions(tiles: Tile[], players: Player[]) {
         let eligibleTiles = tiles.filter(tile => {
             return (tile.isNeutral && !tile.isDisabled && !tile.isPowerTile)
         });
@@ -51,7 +51,7 @@ export class GameBoardInitializer{
     }
 
 
-    public static placeLeaderUnits(tiles: Tile[], players: GamePlayer[]) {
+    public static placeLeaderUnits(tiles: Tile[], players: Player[]) {
         players.forEach(player => {
             const playerTiles = tiles.filter(tile => tile.owner === player);
             const randomIndex = Math.floor(Math.random() * (playerTiles.length - 1));

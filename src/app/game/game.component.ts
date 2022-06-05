@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { GameBoard } from './game-board/game-board.class';
 import { GameState } from './game-state.class';
-import { GamePlayerBuilder } from './game-player/game-player-builder.class';
-import { GamePlayer } from './game-player/game-player.class';
+import { PlayerBuilder } from './player/player-builder.class';
+import { Player } from './player/player.class';
 import { Game } from './game.class';
 import { GameService } from './game.service';
 import { GameConfiguration } from './game-configuration.interface';
@@ -22,8 +22,8 @@ export class GameComponent implements OnInit {
 
   public get game(): Game { return this._gameService.game; }
   public get gameBoard(): GameBoard { return this.game.board; }
-  public get players(): GamePlayer[] { return this.game.players; }
-  public get currentPlayer(): GamePlayer { return this.game.currentPlayer; }
+  public get players(): Player[] { return this.game.players; }
+  public get currentPlayer(): Player { return this.game.currentPlayer; }
   public get currentTurn(): number { return this.game.currentTurn; }
   public get passButtonEnabled(): boolean { return this._passButtonEnabled; }
   public get selectedTile(): Tile | undefined { return this.game.selectedTile; }
@@ -43,7 +43,7 @@ export class GameComponent implements OnInit {
 
   private _buildGameState(): GameState{
     // const players = GamePlayerBuilder.buildPlayers(1, 5);
-    const players = GamePlayerBuilder.buildPlayers(6,0);
+    const players = PlayerBuilder.buildPlayers(6,0);
     // const players = GamePlayerBuilder.buildPlayers(0, 6);
     const configuration: GameConfiguration = { 
       players: players, 

@@ -1,8 +1,9 @@
-import { GamePlayer } from "../../game-player/game-player.class";
+import { Player } from "../../player/player.class";
+import { SoldierUnit } from "../units/soldier-unit.class";
 import { TileState } from "./tile-state.class";
 import { Tile } from "./tile.class";
 
-export class TileActionController{
+export class TileActionController {
 
     public static selectTile(tileState: TileState) {
         tileState.isSelected = true;
@@ -11,7 +12,7 @@ export class TileActionController{
         tileState.isSelected = false;
     }
 
-    public static clickTile(player: GamePlayer, tileOwner: GamePlayer): boolean {
+    public static clickTile(player: Player, tileOwner: Player): boolean {
         let isValid = false;
         if (player.playerTurnCount === 0) {
             if (tileOwner === player) {
@@ -22,40 +23,47 @@ export class TileActionController{
         }
         return isValid;
     }
-    public static grow(tileState: TileState) {}
+    public static grow(tileState: TileState) { }
 
-    public static changeOwnership(tile: Tile, owner: GamePlayer) {
+    public static changeOwnership(tile: Tile, owner: Player) {
         tile.tileState.ownedBy = owner;
         tile.tileState.isNeutral = false;
     }
 
-    public static attackTile(attackingTile: Tile, defendingTile: Tile){
-        const attackingSoldiers = attackingTile.unitController.soldiers;
-        const attacker: GamePlayer = attackingSoldiers[0].ownedBy;
-        const defendingSoldiers = defendingTile.unitController.soldiers;
-        const difference = attackingSoldiers.length - defendingSoldiers.length;
-        const attackerWins = difference > 0;
-        const defenderWins = difference < 0;
-        const tie = difference === 0;
-        if(attackerWins){
-            /** currently nothing in here to control whether a player "attacks" themselves and removes their own leader */
-            this.changeOwnership(defendingTile, attacker);
-            defendingTile.eliminateAllUnits();
-            const attackersEliminated: number = attackingSoldiers.length - difference;
-            if(attackersEliminated > 0){
-                attackingTile.eliminateSoldiers(attackersEliminated);
+    public static moveSoldiers(startTile: Tile, destinationTile: Tile): void {
+        const transfer = startTile.transferOutSoldiers(startTile.unitController.soldiersCount);
+        destinationTile.transferInSoldiers(transfer);
+    }
+
+    public static attackTile(attackingTile: Tile, defendingTile: Tile) {
+        const attackingSoldiers = attackingTile.unitController.readySoldiers;
+        if (attackingSoldiers.length > 0) {
+            const attacker: Player = attackingSoldiers[0].ownedBy;
+            const defendingSoldiers = defendingTile.unitController.readySoldiers;
+            const defendingSoldiersCount = defendingSoldiers.length;
+            const difference = attackingSoldiers.length - defendingSoldiers.length;
+            const attackerWins = difference > 0;
+            const defenderWins = difference < 0;
+            const tie = difference === 0;
+            if (attackerWins) {
+                this.changeOwnership(defendingTile, attacker);
+
+                console.log("ELIMINATING " + defendingSoldiersCount + " from attacker.  (currently: " + attackingTile.unitController.soldiersCount + ")" ) 
+                attackingTile.eliminateSoldiers(defendingSoldiersCount);
+                defendingTile.eliminateAllUnits();
+                console.log("Soldiers eliminated: " + attackingTile.unitController.soldiersCount) 
+                const transferSoldiers = attackingTile.transferOutSoldiers(difference);
+                defendingTile.transferInSoldiers(transferSoldiers);
+            } else if (defenderWins) {
+                attackingTile.eliminateAllSoldiers();
+                defendingTile.eliminateSoldiers(Math.abs(difference));
+            } else if (tie) {
+                attackingTile.eliminateAllSoldiers();
+                defendingTile.eliminateAllSoldiers();
             }
-            const transferSoldiers = attackingTile.transferOutSoldiers(difference);
-            defendingTile.transferInSoldiers(transferSoldiers);
-        }else if(defenderWins){
-            attackingTile.eliminateAllSoldiers();
-            defendingTile.eliminateSoldiers(Math.abs(difference));
-        }else if(tie){
-            attackingTile.eliminateAllSoldiers();
-            defendingTile.eliminateAllSoldiers();
         }
     }
-    
+
     public static disable(tileState: TileState) {
         tileState.isDisabled = true;
     }
