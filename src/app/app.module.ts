@@ -5,13 +5,19 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { GameBoardComponent } from './game/game-board/game-board.component';
 import { GameComponent } from './game/game.component';
+import { UnitComponent } from './game/game-board/units/unit/unit.component';
+import { HeaderComponent } from './game/header/header.component';
+import { RightColumnComponent } from './game/right-column/right-column.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     GameBoardComponent,
-    GameComponent
+    GameComponent,
+    UnitComponent,
+    HeaderComponent,
+    RightColumnComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,23 @@
+.right-column{
+    width: 200px;
+    height: 771px;
+    margin-left: 10px;
+    border-radius: 5px;
+    display:flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: white;
+}
+
+.pass-button-container{
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.pass-button{
+    margin: 5px;
+    font-size: 1.5em;
+}

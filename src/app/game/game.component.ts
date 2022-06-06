@@ -16,31 +16,13 @@ import { Tile } from './game-board/tiles/tile.class';
 export class GameComponent implements OnInit {
 
   constructor(private _gameService: GameService) { }
-
-  private _passButtonEnabled: boolean = true;
-  private _currentPlayerNgStyle: any = {};
-
-  public get game(): Game { return this._gameService.game; }
-  public get gameBoard(): GameBoard { return this.game.board; }
-  public get players(): Player[] { return this.game.players; }
-  public get currentPlayer(): Player { return this.game.currentPlayer; }
-  public get currentTurn(): number { return this.game.currentTurn; }
-  public get passButtonEnabled(): boolean { return this._passButtonEnabled; }
-  public get selectedTile(): Tile | undefined { return this.game.selectedTile; }
-  public get currentPlayerNgStyle(): any { return this._currentPlayerNgStyle; }
-
   ngOnInit(): void {
     const state = this._buildGameState();
     const game = new Game(state);
     this._gameService.setGame(game);
-    this.game.currentPlayer$.subscribe(player => this._currentPlayerNgStyle = {'background-color': player.baseColor});
     game.startGame();
-  }  
-
-  public onClickEndTurnButton(){
-    this.game.onClickEndTurn();
   }
-
+  
   private _buildGameState(): GameState{
     // const players = GamePlayerBuilder.buildPlayers(1, 5);
     const players = PlayerBuilder.buildPlayers(6,0);

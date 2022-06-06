@@ -1,3 +1,4 @@
+import { Subject } from "rxjs";
 import { Player } from "../../player/player.class";
 import { GameBoard } from "../game-board.class";
 import { TileActionController } from "../tiles/tile-action-controller.class";
@@ -7,40 +8,37 @@ import { XYCoordinates } from "../tiles/xy-coordinates.class";
 
 export class UserClickController {
 
-    public static getSelectedTile(tiles: Tile[]): Tile | undefined {
-        return tiles.find(tile => tile.isSelected);
-    }
-
-    public static leftClick(xy: XYCoordinates, currentPlayer: Player, board: GameBoard) {
+    public static leftClick(xy: XYCoordinates, currentPlayer: Player, board: GameBoard, selectedTile: Tile | null): Tile | null {
+        let newlySelectedTile: Tile | null = null;
         if (currentPlayer.isHuman) {
-            if (this.getSelectedTile(board.tiles)) {
+            if (selectedTile) {
                 board.tiles.forEach(tile => tile.deselectTile());
             }
             const closestTile = this._getClosestTile(xy, board);
             closestTile.selectTile();
+            newlySelectedTile = closestTile;
         }
+        return newlySelectedTile;
     }
 
-    public static rightClick(xy: XYCoordinates, currentPlayer: Player, board: GameBoard) {
+    public static rightClick(xy: XYCoordinates, currentPlayer: Player, board: GameBoard, selectedTile: Tile | null) {
         if (currentPlayer.isHuman) {
-            const selectedTile = this.getSelectedTile(board.tiles);
             if (selectedTile) {
-                const soldiers = selectedTile.unitController.soldiers;
-                if(soldiers.length > 0){
-                    const rightClickedTile: Tile = this._getClosestTile(xy, board);
-                    const isNeighbour: boolean = TileFinder.tileIsNeighboursOf(selectedTile, rightClickedTile, board.tiles);
-                    
-                    if(isNeighbour){
-                        const isOwned: boolean = rightClickedTile.owner === selectedTile.owner;
-                        if(isOwned){
-                            TileActionController.moveSoldiers(selectedTile, rightClickedTile);
-                        }else{
-                            TileActionController.attackTile(selectedTile, rightClickedTile);
-                        }
-                        
-                    }                 
+                if(selectedTile.owner === currentPlayer){
+                    const soldiers = selectedTile.unitController.soldiers;
+                    if(soldiers.length > 0){
+                        const rightClickedTile: Tile = this._getClosestTile(xy, board);
+                        const isNeighbour: boolean = TileFinder.tileIsNeighboursOf(selectedTile, rightClickedTile, board.tiles);
+                        if(isNeighbour){
+                            const isOwned: boolean = rightClickedTile.owner === selectedTile.owner;
+                            if(isOwned){
+                                TileActionController.moveSoldiers(selectedTile, rightClickedTile);
+                            }else{
+                                TileActionController.attackTile(selectedTile, rightClickedTile);
+                            }
+                        }                 
+                    }
                 }
-
             }
         }
     }

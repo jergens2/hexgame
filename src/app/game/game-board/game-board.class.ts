@@ -1,4 +1,4 @@
-import { Observable, Subscription } from "rxjs";
+import { BehaviorSubject, Observable, Subject, Subscription } from "rxjs";
 import { TileHexagon } from "./tiles/tile-hexagon";
 import { XYCoordinates } from "./tiles/xy-coordinates.class";
 import { TileBuilder } from "./tiles/tile-builder.class";
@@ -17,12 +17,15 @@ export class GameBoard {
     private _tileRadius: number;
     private _tileBuffer: number;
 
+    private _selectedTile$: BehaviorSubject<Tile | null> = new BehaviorSubject<Tile | null>(null);
+
     public get tiles(): Tile[] { return this._tiles; }
     public get canvasWidth(): number { return this._canvasWidth; }
     public get canvasHeight(): number { return this._canvasHeight; }
     public get tileRadius(): number{ return this._tileRadius; }
     public get tileBuffer(): number { return this._tileBuffer; }
-    public get selectedTile(): Tile | undefined { return UserClickController.getSelectedTile(this.tiles); }
+    public get selectedTile(): Tile | null { return this._selectedTile$.getValue(); }
+    public get selectedTile$(): Observable<Tile | null> { return this._selectedTile$.asObservable(); }
     
     constructor(gameState: GameState) {
         this._canvasWidth = gameState.canvasWidth;
@@ -46,10 +49,10 @@ export class GameBoard {
      * The board is clicked by the current non-bot player
      */
     public leftClickBoard(xy: XYCoordinates, currentPlayer: Player) {
-        UserClickController.leftClick(xy, currentPlayer, this);
+        this._selectedTile$.next(UserClickController.leftClick(xy, currentPlayer, this, this.selectedTile));
     }
     public rightClickBoard(xy: XYCoordinates, currentPlayer: Player) {
-        UserClickController.rightClick(xy, currentPlayer, this);
+        UserClickController.rightClick(xy, currentPlayer, this, this.selectedTile);
     }
 
 

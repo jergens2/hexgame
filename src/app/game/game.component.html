@@ -1,53 +1,10 @@
 <div class="game-root">
-    <div class="left-column">
-        <div class="current-turn">
-            Turn {{ currentTurn }}
-        </div>
-        <div class="current-player" [ngStyle]="currentPlayerNgStyle">
-            {{ currentPlayer.name }} 's turn
-        </div>
-        <div class="player-swatches">
-            <div *ngFor="let player of players">
-                <div *ngFor="let color of player.colorSwatch">
-                    <div style="height:20px; width:20px; font-size: 0.8em;" [style.backgroundColor]="color">
-                        {{ player.colorSwatch.indexOf(color) }}
-                    </div>
-                </div>
-            </div>
-        </div>
 
+    <app-header></app-header>
+    <div class="game-board-container">
+        <app-game-board></app-game-board>
+        <app-right-column></app-right-column>
     </div>
 
-    <app-game-board></app-game-board>
 
-    <div class="right-column">
-        <div>
-            <div *ngIf="selectedTile" style="display:flex;flex-direction: column;">
-                <div>
-                    Tile owner: {{ selectedTile.owner.name }}
-                </div>
-                <div>
-                    Col, Row (X, Y): {{ selectedTile.hexagon }} 
-                </div>
-                <div>
-                    Accumulated Production: {{ selectedTile.accumulatedProduction }}
-                </div>
-                <div>
-                    Production Rate: {{ selectedTile.productionRate }}
-                </div>
-                <div style="display:flex;flex-direction: column;">
-                    <div>Units: {{ selectedTile.unitController.unitCount }}</div>
-                    <div *ngFor="let unit of selectedTile.unitController.units">
-                        {{ unit.unitType }}
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="pass-button-container">
-            <button class="pass-button" enabled="passButtonEnabled" (click)="onClickEndTurnButton()">
-                End Turn
-            </button>
-        </div>
-    </div>
-
-</div>  
+</div>

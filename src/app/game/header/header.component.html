@@ -1,0 +1,14 @@
+<div class="game-header">
+
+    <div style="display:flex;flex-direction: column;">
+        <div class="current-turn">Turn {{ currentTurn }}</div>
+        <div class="current-player" [ngStyle]="currentPlayerNgStyle">{{ currentPlayer.name }} 's turn</div>
+        <div class="player-swatches">
+            <div *ngFor="let player of players">
+                <div style="height:20px; width:20px; font-size: 0.8em;" [style.backgroundColor]="player.colorSwatch[4]">
+                    {{ players.indexOf(player)+1 }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

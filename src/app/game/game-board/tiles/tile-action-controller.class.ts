@@ -47,11 +47,8 @@ export class TileActionController {
             const tie = difference === 0;
             if (attackerWins) {
                 this.changeOwnership(defendingTile, attacker);
-
-                console.log("ELIMINATING " + defendingSoldiersCount + " from attacker.  (currently: " + attackingTile.unitController.soldiersCount + ")" ) 
                 attackingTile.eliminateSoldiers(defendingSoldiersCount);
                 defendingTile.eliminateAllUnits();
-                console.log("Soldiers eliminated: " + attackingTile.unitController.soldiersCount) 
                 const transferSoldiers = attackingTile.transferOutSoldiers(difference);
                 defendingTile.transferInSoldiers(transferSoldiers);
             } else if (defenderWins) {
