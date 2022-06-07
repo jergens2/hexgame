@@ -18,7 +18,11 @@ export class TileUnitController {
 
     }
 
-    public setUnitsReady(): void{
+    public selectSoldiers(): void{ 
+        this.soldiers.forEach(soldier => soldier.selectUnit());
+    }
+
+    public endOfTurnRefresh(): void{
         if(this.hasUnits){
             this.units.forEach(unit => unit.restoreTravelDistance());
         }

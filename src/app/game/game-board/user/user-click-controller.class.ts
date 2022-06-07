@@ -15,7 +15,7 @@ export class UserClickController {
                 board.tiles.forEach(tile => tile.deselectTile());
             }
             const closestTile = this._getClosestTile(xy, board);
-            closestTile.selectTile();
+            closestTile.selectTile(currentPlayer);
             newlySelectedTile = closestTile;
         }
         return newlySelectedTile;

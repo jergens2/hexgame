@@ -40,7 +40,8 @@ export class TileAppearanceController{
                 appearance.strokeStyle = 'black';
             }
             if(tile.isSelected){
-
+                appearance.lineWidth = 4;
+                appearance.strokeStyle = 'gray';
             }
             const soldiersCount = tile.unitController.soldiersCount;
             const readySoldiersCount = tile.unitController.readySoldiersCount;

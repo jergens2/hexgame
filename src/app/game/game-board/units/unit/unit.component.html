@@ -1,8 +1,8 @@
- <div class="unit-root" *ngIf="unit !== null">
-     <div class="unit leader" *ngIf="isLeader">
+ <div class="unit-root no-select" *ngIf="unit !== null" (click)="onClick()" >
+     <div class="unit leader" [ngClass]="ngClass"*ngIf="isLeader">
         L
      </div>
-     <div class="unit soldier" *ngIf="isSoldier">
+     <div class="unit soldier" [ngClass]="ngClass" *ngIf="isSoldier">
         S
      </div>
 </div>

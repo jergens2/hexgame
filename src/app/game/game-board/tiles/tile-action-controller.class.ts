@@ -5,8 +5,11 @@ import { Tile } from "./tile.class";
 
 export class TileActionController {
 
-    public static selectTile(tileState: TileState) {
-        tileState.isSelected = true;
+    public static selectTile(tile: Tile, player: Player) {
+        tile.tileState.isSelected = true;
+        if(tile.owner === player){
+            tile.unitController.selectSoldiers();
+        }
     }
     public static deselectTile(tileState: TileState) {
         tileState.isSelected = false;

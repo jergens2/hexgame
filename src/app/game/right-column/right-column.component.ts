@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { GameBoard } from '../game-board/game-board.class';
 import { Tile } from '../game-board/tiles/tile.class';
+import { Unit } from '../game-board/units/unit.class';
 import { Game } from '../game.class';
 import { GameService } from '../game.service';
 import { Player } from '../player/player.class';
@@ -33,6 +34,9 @@ export class RightColumnComponent implements OnInit {
 
   ngOnInit(): void {
     this._gameService.game.board.selectedTile$.subscribe(tile => { this._updateDisplay() });
+  }
+
+  public onUnitClicked(unit: Unit | null){
   }
 
   private _updateDisplay() {

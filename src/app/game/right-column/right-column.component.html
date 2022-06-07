@@ -10,7 +10,7 @@
                 {{ unitCount }}
             </div>
             <div style="display:flex;flex-direction: row;flex-wrap: wrap;">
-                <app-unit *ngFor="let unit of selectedTile.unitController.units" [unit]="unit"></app-unit>
+                <app-unit *ngFor="let unit of selectedTile.unitController.units" [unit]="unit" (unitClicked$)="onUnitClicked($event)"></app-unit>
             </div>
             
 

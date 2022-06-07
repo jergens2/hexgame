@@ -13,7 +13,6 @@ import { SoldierUnit } from "../units/soldier-unit.class";
 
 export class Tile{ 
     
-    private _productionMode: TileProductionMode = TileProductionMode.BUILD_UNITS;
     private _hexagon: TileHexagon;
     private _tileState: TileState;
     private _unitController: TileUnitController = new TileUnitController();
@@ -30,7 +29,7 @@ export class Tile{
 
     public get unitController(): TileUnitController { return this._unitController; }
 
-    public get productionMode(): TileProductionMode { return this._productionMode; }
+    public get productionMode(): TileProductionMode { return this.tileState.productionMode; }
     public get hexagon(): TileHexagon { return this._hexagon; }
     public get appearance(): TileAppearance { return TileAppearanceController.getAppearance(this); }
 
@@ -43,9 +42,9 @@ export class Tile{
     public eliminateSoldiers(count: number): void { return this._unitController.eliminateSoldiers(count); }
     public transferOutSoldiers(count: number): SoldierUnit[] { return this._unitController.transferOutSoldiers(count); }
     public transferInSoldiers(soldiers: SoldierUnit[]): void { return this._unitController.transferInSoldiers(soldiers); }
-    public setUnitsReady(): void { this._unitController.setUnitsReady(); }
+    public setUnitsReady(): void { this._unitController.endOfTurnRefresh(); }
 
-    public selectTile(): void { TileActionController.selectTile(this.tileState); }
+    public selectTile(player: Player): void { TileActionController.selectTile(this, player); }
     public deselectTile(): void { TileActionController.deselectTile(this.tileState); }
     public clickTile(player: Player): void { TileActionController.clickTile(player, this.tileState.ownedBy); }
     // public grow(): void { TileActionController.grow(this.tileState); }
