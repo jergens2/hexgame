@@ -40,8 +40,9 @@ export class Tile{
     public eliminateAllUnits(): void { return this._unitController.eliminateAllUnits(); }
     public eliminateAllSoldiers(): void { return this._unitController.eliminateAllSoldiers(); }
     public eliminateSoldiers(count: number): void { return this._unitController.eliminateSoldiers(count); }
-    public transferOutSoldiers(count: number): SoldierUnit[] { return this._unitController.transferOutSoldiers(count); }
-    public transferInSoldiers(soldiers: SoldierUnit[]): void { return this._unitController.transferInSoldiers(soldiers); }
+    public getMovingSoldiers(): SoldierUnit[] { return this._unitController.getMovingSoldiers(); }
+    public moveInSoldiers(soldiers: SoldierUnit[]): void { return this._unitController.moveInSoldiers(soldiers); }
+    public getAttackingSoldiers(): SoldierUnit[] { return this._unitController.getAttackingSoldiers(); }
     public setUnitsReady(): void { this._unitController.endOfTurnRefresh(); }
 
     public selectTile(player: Player): void { TileActionController.selectTile(this, player); }

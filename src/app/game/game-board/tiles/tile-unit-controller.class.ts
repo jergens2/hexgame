@@ -10,64 +10,31 @@ export class TileUnitController {
     public get hasUnits(): boolean { return this.unitCount > 0; }
     public get soldiers(): SoldierUnit[] { return this._getSoldiers(); }
     public get soldiersCount(): number { return this.soldiers.length; }
-    public get readySoldiers(): SoldierUnit[] { return this._getSoldiers(true); }
-    public get readySoldiersCount(): number { return this.readySoldiers.length; }
+    public get fightReadySoldiers(): SoldierUnit[] { return this._getFightReadySoldiers(); }
+    public get fightReadySoldiersCount(): number { return this.fightReadySoldiers.length; }
 
+    public getAttackingSoldiers(): SoldierUnit[] { return this._getAttackingSoldiers(); }
+    public getMovingSoldiers(): SoldierUnit[] { return this._getMovingSoldiers(); }
+    public selectSoldiers(): void { this.soldiers.forEach(soldier => soldier.selectUnit()); }
+    public endOfTurnRefresh(): void { this.units.forEach(unit => unit.restoreAll()); }
+    public placeLeader(leader: LeaderUnit) { this.addUnit(leader); }
+    public addUnit(unit: Unit) { this._units.push(unit); }
 
-    constructor() {
-
-    }
-
-    public selectSoldiers(): void{ 
-        this.soldiers.forEach(soldier => soldier.selectUnit());
-    }
-
-    public endOfTurnRefresh(): void{
-        if(this.hasUnits){
-            this.units.forEach(unit => unit.restoreTravelDistance());
-        }
-    }
-
-    public placeLeader(leader: LeaderUnit) {
-        this.addUnit(leader);
-    }
-
-    public addUnit(unit: Unit) {
-        this._units.push(unit);
-    }
-    public transferOutSoldiers(count: number):SoldierUnit[] {
-        const soldiers: SoldierUnit[] = []; 
-        let soldiersCount = this.readySoldiersCount;
-        let remainingToTransfer: number = count;
-        while(soldiersCount > 0 && remainingToTransfer > 0){
-            if(soldiersCount >= remainingToTransfer){
-                const soldier = this._eliminateOneSoldier(true);
-                if(soldier){
-                    soldiers.push(soldier);
-                }
-                remainingToTransfer--;
-                soldiersCount = this.readySoldiersCount;
-            }else{
-                soldiersCount = 0;
-            }
-        }
-        return soldiers;
-    }
-    public transferInSoldiers(soldiers: SoldierUnit[]): void {
+    public moveInSoldiers(soldiers: SoldierUnit[]): void {
         soldiers.forEach(soldier => {
             soldier.travel();
             this._units.push(soldier);
         });
     }
-    public eliminateSoldiers(count: number){
+    public eliminateSoldiers(count: number) {
         let soldiersCount = this.soldiersCount;
         let remainingToRemove: number = count;
-        while(soldiersCount > 0 && remainingToRemove > 0){
-            if(soldiersCount >= remainingToRemove){
+        while (soldiersCount > 0 && remainingToRemove > 0) {
+            if (soldiersCount >= remainingToRemove) {
                 this._eliminateOneSoldier();
                 remainingToRemove--;
                 soldiersCount = this.soldiersCount;
-            }else{
+            } else {
                 soldiersCount = 0;
             }
         }
@@ -80,27 +47,52 @@ export class TileUnitController {
         this._units = noSoldiers;
     }
 
-    private _getSoldiers(readySoldiersOnly: boolean = false): SoldierUnit[] {
+    private _getAttackingSoldiers(): SoldierUnit[] {
+        const soldiers: SoldierUnit[] = [];
+        let unitCount = this._units.length;
+        for (let i = 0; i < unitCount; i++) {
+            const unit = this._units[i];
+            if (unit.isAttackingSoldier) {
+                const soldier = this._units.splice(i, 1);
+                if (soldier.length > 0) {
+                    soldiers.push(soldier[0]);
+                }
+                i--;
+            }
+            unitCount = this._units.length;
+        }
+        return soldiers;
+    }
+    private _getMovingSoldiers(): SoldierUnit[] {
+        const soldiers: SoldierUnit[] = [];
+        let unitCount = this._units.length;
+        for (let i = 0; i < unitCount; i++) {
+            const unit = this._units[i];
+            if (unit.isMovingSoldier) {
+                const soldier = this._units.splice(i, 1);
+                if (soldier.length > 0) {
+                    soldiers.push(soldier[0]);
+                }
+                i--;
+            }
+            unitCount = this._units.length;
+        }
+        return soldiers;
+    }
+
+    private _getFightReadySoldiers(): SoldierUnit[] { return this._getSoldiers().filter(soldier => soldier.canFight); }
+    private _getSoldiers(): SoldierUnit[] {
         const soldiers: SoldierUnit[] = [];
         this._units.forEach(unit => {
             if (unit.isSoldier) {
-                if(readySoldiersOnly === true){
-                    if(unit.canTravel){
-                        soldiers.push(unit);
-                    }
-                }else{
-                    soldiers.push(unit);
-                }
+                soldiers.push(unit);
             }
         });
         return soldiers;
     }
-    private _eliminateOneSoldier(readySoldiersOnly: boolean = false): SoldierUnit | null {
+    private _eliminateOneSoldier(): SoldierUnit | null {
         let index = this._units.findIndex(item => item.isSoldier);
-        if(readySoldiersOnly === true){
-            index = this._units.findIndex(item => item.isSoldier && item.canTravel);
-        }
-        if(index > -1){
+        if (index > -1) {
             const splice = this._units.splice(index, 1);
             return splice[0];
         }

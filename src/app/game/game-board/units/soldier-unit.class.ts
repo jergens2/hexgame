@@ -9,6 +9,7 @@ export class SoldierUnit extends Unit{
     public restoreTravelDistance(): void { this._travelDistanceRemaining = 1; }
     public restoreFightingStrength(): void { this._fightingStrengthRemaining = 1; }
 
+
     constructor(owner: Player){
         super(owner);
     }

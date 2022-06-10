@@ -25,7 +25,8 @@ export class GameComponent implements OnInit {
   
   private _buildGameState(): GameState{
     // const players = GamePlayerBuilder.buildPlayers(1, 5);
-    const players = PlayerBuilder.buildPlayers(6,0);
+    // const players = PlayerBuilder.buildPlayers(6,0);
+    const players = PlayerBuilder.buildPlayers(2,0);
     // const players = GamePlayerBuilder.buildPlayers(0, 6);
     const configuration: GameConfiguration = { 
       players: players, 

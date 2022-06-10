@@ -44,7 +44,7 @@ export class TileAppearanceController{
                 appearance.strokeStyle = 'gray';
             }
             const soldiersCount = tile.unitController.soldiersCount;
-            const readySoldiersCount = tile.unitController.readySoldiersCount;
+            const readySoldiersCount = tile.unitController.fightReadySoldiersCount;
             if(soldiersCount > 0){
                 appearance.text = String(tile.unitController.soldiersCount);
                 if(readySoldiersCount < (soldiersCount/2)){

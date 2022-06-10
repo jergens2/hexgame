@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, Output } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
+import { GameService } from 'src/app/game/game.service';
 import { Unit } from '../unit.class';
 
 @Component({
@@ -9,7 +10,7 @@ import { Unit } from '../unit.class';
 })
 export class UnitComponent implements OnInit {
 
-  constructor() { }
+  constructor(private _gameService: GameService) { }
 
   private _unit: Unit | null = null;
   private _unitClicked$: Subject<any> = new Subject();
@@ -27,20 +28,27 @@ export class UnitComponent implements OnInit {
     this._evaluateStyles();
   }
 
-  private _evaluateStyles(){
-    if(this.unit){
-      if(this.unit.isSelected){
-        this._ngClass = ['is-selected'];
-      }else{
-        this._ngClass = [];
+  private _evaluateStyles() {
+    if (this.unit) {
+      const classes: string[] = [];
+      if (this.unit.isSelected) {
+        classes.push('is-selected');
       }
+      if (this.unit.cannotFight) {
+        classes.push('cannot-fight');
+      }
+      this._ngClass = classes;
     }
   }
 
-  public onClick(){
-    this.unit?.toggleSelection();
-    this._evaluateStyles();
-    this._unitClicked$.next(this.unit);
+  public onClick() {
+    if (this.unit) {
+      if (this.unit.ownedBy === this._gameService.currentPlayer) {
+        this.unit.toggleSelection();
+        this._evaluateStyles();
+        // this._unitClicked$.next(this.unit);
+      }
+    }
   }
 
 }

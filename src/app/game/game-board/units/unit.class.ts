@@ -22,7 +22,26 @@ export abstract class Unit{
     public get isLeader(): boolean { return this.unitType === UnitType.LEADER; }
     public get isSoldier(): boolean { return this.unitType === UnitType.SOLDIER; }
 
+    public get isAttackingSoldier(): boolean { 
+        if(this.isSoldier){
+            if(this.canFight && this.canTravel && this.isSelected){
+                return true;
+            }
+        }
+        return false;
+    }
+    public get isMovingSoldier(): boolean { 
+        if(this.isSoldier){
+            if(this.canTravel && this.isSelected){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public abstract get unitType(): UnitType;
+    public restoreAll(): void { this.restoreFightingStrength(); this.restoreTravelDistance(); }
+    public exhaust(): void { this.diminishFightingStrength(); this.diminishMovementStrenght(); }
     public abstract restoreTravelDistance(): void;
     public abstract restoreFightingStrength(): void;
 
@@ -31,8 +50,12 @@ export abstract class Unit{
     public deselectUnit(): void { this._isSelected = false; }
     public toggleSelection(): void { this._isSelected = !this._isSelected; }
 
+    public diminishFightingStrength(): void { this._fightingStrengthRemaining = 0; }
+    public diminishMovementStrenght(): void { this._travelDistanceRemaining = 0; }
+
     private _isTravelExhausted(): boolean { return this._travelDistanceRemaining < 1; }
     private _isFightingExhausted(): boolean { return this._fightingStrengthRemaining < 1; }
+
 
     constructor(ownedBy: Player){
         this._ownedBy = ownedBy;

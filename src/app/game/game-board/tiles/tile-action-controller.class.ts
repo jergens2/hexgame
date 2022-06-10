@@ -34,15 +34,15 @@ export class TileActionController {
     }
 
     public static moveSoldiers(startTile: Tile, destinationTile: Tile): void {
-        const transfer = startTile.transferOutSoldiers(startTile.unitController.soldiersCount);
-        destinationTile.transferInSoldiers(transfer);
+        const movingSoldiers = startTile.getMovingSoldiers();
+        destinationTile.moveInSoldiers(movingSoldiers);
     }
 
     public static attackTile(attackingTile: Tile, defendingTile: Tile) {
-        const attackingSoldiers = attackingTile.unitController.readySoldiers;
+        const attackingSoldiers = attackingTile.getAttackingSoldiers();
         if (attackingSoldiers.length > 0) {
             const attacker: Player = attackingSoldiers[0].ownedBy;
-            const defendingSoldiers = defendingTile.unitController.readySoldiers;
+            const defendingSoldiers = defendingTile.unitController.fightReadySoldiers;
             const defendingSoldiersCount = defendingSoldiers.length;
             const difference = attackingSoldiers.length - defendingSoldiers.length;
             const attackerWins = difference > 0;
@@ -50,10 +50,11 @@ export class TileActionController {
             const tie = difference === 0;
             if (attackerWins) {
                 this.changeOwnership(defendingTile, attacker);
-                attackingTile.eliminateSoldiers(defendingSoldiersCount);
-                defendingTile.eliminateAllUnits();
-                const transferSoldiers = attackingTile.transferOutSoldiers(difference);
-                defendingTile.transferInSoldiers(transferSoldiers);
+                while(attackingSoldiers.length >= difference){
+                    attackingSoldiers.splice(0, 1);
+                }
+                attackingSoldiers.forEach(soldier => soldier.diminishFightingStrength());
+                defendingTile.moveInSoldiers(attackingSoldiers);
             } else if (defenderWins) {
                 attackingTile.eliminateAllSoldiers();
                 defendingTile.eliminateSoldiers(Math.abs(difference));
@@ -70,4 +71,6 @@ export class TileActionController {
     public static setPowerTile(tileState: TileState) {
         tileState.isPowerSource = true;
     }
+
+
 }
