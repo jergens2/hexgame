@@ -16,6 +16,7 @@ export class GameService {
   public get currentTurn$(): Observable<number> { return this.game.currentTurn$; }
   public get currentTurn(): number { return this.game.currentTurn; }
   public get currentPlayer$(): Observable<Player> { return this.game.currentPlayer$; }
+  public get updateTileUnits(): Observable<any> { return this.game.updateTileUnits$; }
   public get currentPlayer(): Player { return this.game.currentPlayer; }
 
   constructor() { }

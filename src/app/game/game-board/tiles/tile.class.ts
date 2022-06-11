@@ -43,10 +43,10 @@ export class Tile{
     public getMovingSoldiers(): SoldierUnit[] { return this._unitController.getMovingSoldiers(); }
     public moveInSoldiers(soldiers: SoldierUnit[]): void { return this._unitController.moveInSoldiers(soldiers); }
     public getAttackingSoldiers(): SoldierUnit[] { return this._unitController.getAttackingSoldiers(); }
-    public setUnitsReady(): void { this._unitController.endOfTurnRefresh(); }
+    public endOfTurn(): void { this._unitController.endOfTurnRefresh(); }
 
     public selectTile(player: Player): void { TileActionController.selectTile(this, player); }
-    public deselectTile(): void { TileActionController.deselectTile(this.tileState); }
+    public deselectTile(): void { TileActionController.deselectTile(this); }
     public clickTile(player: Player): void { TileActionController.clickTile(player, this.tileState.ownedBy); }
     // public grow(): void { TileActionController.grow(this.tileState); }
 
@@ -56,7 +56,6 @@ export class Tile{
     
     public evaluateProduction(): void{ TileProductionController.evaluateProduction(this); }
 
-    
     constructor(hexagon: TileHexagon){
         this._hexagon = hexagon;
         this._tileState = {

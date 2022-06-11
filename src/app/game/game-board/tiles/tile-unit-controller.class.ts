@@ -16,6 +16,7 @@ export class TileUnitController {
     public getAttackingSoldiers(): SoldierUnit[] { return this._getAttackingSoldiers(); }
     public getMovingSoldiers(): SoldierUnit[] { return this._getMovingSoldiers(); }
     public selectSoldiers(): void { this.soldiers.forEach(soldier => soldier.selectUnit()); }
+    public deselectUnits(): void { this.units.forEach(unit => unit.deselectUnit()); }
     public endOfTurnRefresh(): void { this.units.forEach(unit => unit.restoreAll()); }
     public placeLeader(leader: LeaderUnit) { this.addUnit(leader); }
     public addUnit(unit: Unit) { this._units.push(unit); }

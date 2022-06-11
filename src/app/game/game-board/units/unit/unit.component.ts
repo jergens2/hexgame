@@ -26,19 +26,23 @@ export class UnitComponent implements OnInit {
 
   ngOnInit(): void {
     this._evaluateStyles();
+    this._gameService.game.board.selectedTile$.subscribe(player => this._evaluateStyles());
+    this._gameService.currentPlayer$.subscribe(player => this._evaluateStyles());
+    this._gameService.updateTileUnits.subscribe(turn => this._evaluateStyles());
   }
 
   private _evaluateStyles() {
+    const classes: string[] = [];
     if (this.unit) {
-      const classes: string[] = [];
-      if (this.unit.isSelected) {
+      const isOwner: boolean = this._gameService.currentPlayer === this.unit.ownedBy
+      if (this.unit.isSelected && isOwner) {
         classes.push('is-selected');
       }
       if (this.unit.cannotFight) {
         classes.push('cannot-fight');
       }
-      this._ngClass = classes;
     }
+    this._ngClass = classes;
   }
 
   public onClick() {

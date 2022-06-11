@@ -17,17 +17,22 @@ export class GameBoard {
     private _tileRadius: number;
     private _tileBuffer: number;
 
+    private _gameState: GameState;
+
     private _selectedTile$: BehaviorSubject<Tile | null> = new BehaviorSubject<Tile | null>(null);
+    private _updateTileUnits$: Subject<any> = new Subject();
 
     public get tiles(): Tile[] { return this._tiles; }
     public get canvasWidth(): number { return this._canvasWidth; }
     public get canvasHeight(): number { return this._canvasHeight; }
-    public get tileRadius(): number{ return this._tileRadius; }
+    public get tileRadius(): number { return this._tileRadius; }
     public get tileBuffer(): number { return this._tileBuffer; }
     public get selectedTile(): Tile | null { return this._selectedTile$.getValue(); }
     public get selectedTile$(): Observable<Tile | null> { return this._selectedTile$.asObservable(); }
-    
+    public get updateTileUnits$(): Observable<any> { return this._updateTileUnits$.asObservable(); }
+
     constructor(gameState: GameState) {
+        this._gameState = gameState;
         this._canvasWidth = gameState.canvasWidth;
         this._canvasHeight = gameState.canvasHeight;
         this._tileRadius = gameState.tileRadius;
@@ -37,24 +42,43 @@ export class GameBoard {
         GameBoardInitializer.setPowerTiles(this.tiles, gameState.tilePoweredCount);
         GameBoardInitializer.setPlayerPositions(this.tiles, gameState.players);
         GameBoardInitializer.placeLeaderUnits(this.tiles, gameState.players);
-        gameState.currentTurn$.subscribe(turn => {
+        this._gameState.currentTurn$.subscribe(turn => {
             this._tiles.forEach(tile => {
                 tile.evaluateProduction();
-                tile.setUnitsReady();
+                tile.endOfTurn();
             });
+            this._reselectTileUnits();
         });
+        this._gameState.currentPlayer$.subscribe(player => this._reselectTileUnits());
     }
-        
+
+    private _reselectTileUnits(): void {
+        if (this.selectedTile) {
+            this.selectedTile.selectTile(this._gameState.currentPlayer);
+            this._selectedTile$.next(this.selectedTile);
+            this._updateTileUnits$.next();
+        }
+    }
+
     /** 
      * The board is clicked by the current non-bot player
      */
     public leftClickBoard(xy: XYCoordinates, currentPlayer: Player) {
-        this._selectedTile$.next(UserClickController.leftClick(xy, currentPlayer, this, this.selectedTile));
+        UserClickController.leftClick(xy, currentPlayer, this, this.selectedTile);
+        this._updateSelectedTile();
     }
     public rightClickBoard(xy: XYCoordinates, currentPlayer: Player) {
         UserClickController.rightClick(xy, currentPlayer, this, this.selectedTile);
+        this._updateSelectedTile();
     }
 
 
-
+    private _updateSelectedTile(){
+        const selectedTile = this.tiles.find(tile => tile.isSelected);
+        if(selectedTile){
+            this._selectedTile$.next(selectedTile);
+        }else{
+            this._selectedTile$.next(null);
+        }
+    }
 }

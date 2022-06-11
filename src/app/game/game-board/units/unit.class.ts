@@ -41,7 +41,7 @@ export abstract class Unit{
 
     public abstract get unitType(): UnitType;
     public restoreAll(): void { this.restoreFightingStrength(); this.restoreTravelDistance(); }
-    public exhaust(): void { this.diminishFightingStrength(); this.diminishMovementStrenght(); }
+    public exhaustAll(): void { this.diminishFightingStrength(); this.diminishMovementStrenght(); }
     public abstract restoreTravelDistance(): void;
     public abstract restoreFightingStrength(): void;
 

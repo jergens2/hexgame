@@ -11,8 +11,9 @@ export class TileActionController {
             tile.unitController.selectSoldiers();
         }
     }
-    public static deselectTile(tileState: TileState) {
-        tileState.isSelected = false;
+    public static deselectTile(tile: Tile) {
+        tile.tileState.isSelected = false;
+        tile.unitController.deselectUnits();
     }
 
     public static clickTile(player: Player, tileOwner: Player): boolean {
@@ -70,6 +71,10 @@ export class TileActionController {
     }
     public static setPowerTile(tileState: TileState) {
         tileState.isPowerSource = true;
+    }
+
+    public static getSelectedTile(tiles: Tile[]): Tile | undefined {
+        return tiles.find(tile => tile.isSelected);
     }
 
 

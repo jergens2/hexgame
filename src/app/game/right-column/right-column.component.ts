@@ -33,17 +33,18 @@ export class RightColumnComponent implements OnInit {
   public onClickEndTurnButton() { this.game.onClickEndTurn(); }
 
   ngOnInit(): void {
-    this._gameService.game.board.selectedTile$.subscribe(tile => { this._updateDisplay() });
+    this._gameService.game.board.selectedTile$.subscribe(tile => this._updateDisplay());
+    this._gameService.currentPlayer$.subscribe(player => this._updateDisplay());
   }
 
-  public onUnitClicked(unit: Unit | null){
+  public onUnitClicked(unit: Unit | null) {
   }
 
   private _updateDisplay() {
     let tileOwnership: string = '';
     let unitCountStr: string = '';
     if (this.selectedTile !== null) {
-      if(this.selectedTile.isOwned){
+      if (this.selectedTile.isOwned) {
         tileOwnership = this.selectedTile.owner.name + '\'s tile';
       }
       const unitCount = this.selectedTile.unitController.unitCount;

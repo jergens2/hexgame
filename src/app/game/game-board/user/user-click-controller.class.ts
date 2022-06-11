@@ -36,6 +36,8 @@ export class UserClickController {
                             }else{
                                 TileActionController.attackTile(selectedTile, rightClickedTile);
                             }
+                            board.tiles.forEach(tile => tile.deselectTile());
+                            rightClickedTile.selectTile(currentPlayer);
                         }                 
                     }
                 }

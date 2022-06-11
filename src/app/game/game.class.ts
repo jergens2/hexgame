@@ -19,6 +19,7 @@ export class Game {
     public get players(): Player[] { return this._state.players; }
     public get playerCount(): number { return this._state.playerCount; }
     public get currentTurn$(): Observable<number> { return this._state.currentTurn$; }
+    public get updateTileUnits$(): Observable<any> { return this.board.updateTileUnits$; }
     public get currentTurn(): number { return this._state.currentTurn; }
     public get tiles(): Tile[] { return this._board.tiles; }
 
