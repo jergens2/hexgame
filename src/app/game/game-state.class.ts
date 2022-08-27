@@ -19,7 +19,6 @@ export class GameState {
     public get tileRadius(): number { return this._configuration.tileRadius; }
     public get tileBuffer(): number { return this._configuration.tileBuffer; }
     public get tileDisabledRate(): number { return this._configuration.tileDisabledRate; }
-    public get tilePoweredCount(): number { return this._configuration.tilePoweredCount; }
 
     constructor(configuration: GameConfiguration) {
         this._configuration = configuration;

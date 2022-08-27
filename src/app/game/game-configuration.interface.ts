@@ -7,5 +7,4 @@ export interface GameConfiguration{
     tileRadius: number, 
     tileBuffer: number, 
     tileDisabledRate: number, 
-    tilePoweredCount: number
 }

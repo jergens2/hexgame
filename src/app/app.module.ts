@@ -8,6 +8,7 @@ import { GameComponent } from './game/game.component';
 import { UnitComponent } from './game/game-board/units/unit/unit.component';
 import { HeaderComponent } from './game/header/header.component';
 import { RightColumnComponent } from './game/right-column/right-column.component';
+import { LeftColumnComponent } from './game/left-column/left-column.component';
 
 
 @NgModule({
@@ -17,7 +18,8 @@ import { RightColumnComponent } from './game/right-column/right-column.component
     GameComponent,
     UnitComponent,
     HeaderComponent,
-    RightColumnComponent
+    RightColumnComponent,
+    LeftColumnComponent
   ],
   imports: [
     BrowserModule,

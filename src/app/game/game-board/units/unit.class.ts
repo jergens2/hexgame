@@ -21,6 +21,7 @@ export abstract class Unit{
 
     public get isLeader(): boolean { return this.unitType === UnitType.LEADER; }
     public get isSoldier(): boolean { return this.unitType === UnitType.SOLDIER; }
+    public get isBuilder(): boolean { return this.unitType === UnitType.BUILDER; }
 
     public get isAttackingSoldier(): boolean { 
         if(this.isSoldier){

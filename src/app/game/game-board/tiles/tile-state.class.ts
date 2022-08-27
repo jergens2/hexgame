@@ -10,4 +10,5 @@ export interface TileState {
     productionRate: number;
     accumulatedProduction: number;
     productionMode: TileProductionMode;
-}
+    resourcium: number
+} 

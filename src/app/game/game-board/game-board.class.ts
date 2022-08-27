@@ -39,7 +39,7 @@ export class GameBoard {
         this._tileBuffer = gameState.tileBuffer;
         this._tiles = TileBuilder.buildTiles(this._tileRadius, this._tileBuffer, this._canvasWidth, this._canvasHeight);
         GameBoardInitializer.disableTiles(this.tiles, gameState.tileDisabledRate);
-        GameBoardInitializer.setPowerTiles(this.tiles, gameState.tilePoweredCount);
+        GameBoardInitializer.setTileResorsium(this.tiles);
         GameBoardInitializer.setPlayerPositions(this.tiles, gameState.players);
         GameBoardInitializer.placeLeaderUnits(this.tiles, gameState.players);
         this._gameState.currentTurn$.subscribe(turn => {

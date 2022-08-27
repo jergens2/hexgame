@@ -51,7 +51,10 @@ export class TileAppearanceController{
                     appearance.strokeStyle = 'rgb(148, 0, 0)';
                 }
             }
-        }       
+        }
+
+        appearance.text = String(tile.tileState.resourcium);
+
         return appearance;
     }
 }

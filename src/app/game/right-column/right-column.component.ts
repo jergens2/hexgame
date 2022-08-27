@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { GameBoard } from '../game-board/game-board.class';
+import { TileProductionMode } from '../game-board/tiles/tile-production-mode.enum';
 import { Tile } from '../game-board/tiles/tile.class';
 import { Unit } from '../game-board/units/unit.class';
 import { Game } from '../game.class';
@@ -30,6 +31,12 @@ export class RightColumnComponent implements OnInit {
   public get unitCount(): string { return this._unitCount; }
   public get passButtonEnabled(): boolean { return this._passButtonEnabled; }
 
+  public get isProducingSoldiers(): boolean { return this.selectedTile?.productionMode === TileProductionMode.PRODUCE_SOLDIERS; }
+  public get isProducingBuilders(): boolean { return this.selectedTile?.productionMode === TileProductionMode.PRODUCE_BUILDERS }
+  public get isProducingGrowth(): boolean { return this.selectedTile?.productionMode === TileProductionMode.PRODUCE_GROWTH; }
+  public get isProducingIntelligence(): boolean { return this.selectedTile?.productionMode === TileProductionMode.PRODUCE_INTELLIGENCE; }
+
+
   public onClickEndTurnButton() { this.game.onClickEndTurn(); }
 
   ngOnInit(): void {
@@ -38,6 +45,20 @@ export class RightColumnComponent implements OnInit {
   }
 
   public onUnitClicked(unit: Unit | null) {
+  }
+
+  public onClickProductionMode(mode: string){
+    let productionMode: TileProductionMode = TileProductionMode.PRODUCE_SOLDIERS
+    if(mode === TileProductionMode.PRODUCE_BUILDERS){
+      productionMode = TileProductionMode.PRODUCE_BUILDERS;
+    }else if(mode === TileProductionMode.PRODUCE_SOLDIERS){
+      productionMode = TileProductionMode.PRODUCE_SOLDIERS;
+    }else if(mode === TileProductionMode.PRODUCE_GROWTH){
+      productionMode = TileProductionMode.PRODUCE_GROWTH;
+    }else if(mode === TileProductionMode.PRODUCE_INTELLIGENCE){
+      productionMode = TileProductionMode.PRODUCE_INTELLIGENCE;
+    }
+    this.selectedTile?.changeProductionMode(productionMode);
   }
 
   private _updateDisplay() {

@@ -8,7 +8,25 @@
                 {{ unitCount }}
             </div>
             <div style="display:flex;flex-direction: row;flex-wrap: wrap;">
-                <app-unit *ngFor="let unit of selectedTile.unitController.units" [unit]="unit" (unitClicked$)="onUnitClicked($event)"></app-unit>
+                <app-unit *ngFor="let unit of selectedTile.unitController.units" [unit]="unit"
+                    (unitClicked$)="onUnitClicked($event)"></app-unit>
+            </div>
+            <div style="margin-top: 10px; display:flex;flex-direction: column;">
+                <div
+                    style="margin: 10px; border-bottom: 1px solid gray; display:flex;flex-direction: row; justify-content: center;">
+                    Production Mode:
+                </div>
+                <div class="production-mode no-select" [ngClass]="{'selected-production-mode': isProducingSoldiers}"
+                    (click)='onClickProductionMode("PRODUCE_SOLDIERS")'>
+                    Soldiers</div>
+                <div class="production-mode no-select" [ngClass]="{'selected-production-mode': isProducingBuilders}"
+                    (click)='onClickProductionMode("PRODUCE_BUILDERS")'>
+                    Builders</div>
+                <div class="production-mode no-select" [ngClass]="{'selected-production-mode': isProducingGrowth}"
+                    (click)='onClickProductionMode("PRODUCE_GROWTH")'>
+                    Growth</div>
+                <div class="production-mode no-select" [ngClass]="{'selected-production-mode': isProducingIntelligence}"
+                    (click)='onClickProductionMode("PRODUCE_INTELLIGENCE")'>Intelligence</div>
             </div>
         </div>
         <div style="display:flex;flex-direction: column;" *ngIf="selectedTile">

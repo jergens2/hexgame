@@ -21,6 +21,7 @@ export class UnitComponent implements OnInit {
 
   public get isSoldier(): boolean { if (this.unit) { return this.unit.isSoldier } else { return false }; }
   public get isLeader(): boolean { if (this.unit) { return this.unit.isLeader } else { return false }; }
+  public get isBuilder(): boolean { if (this.unit) { return this.unit.isBuilder } else { return false }; }
 
   @Output() public get unitClicked$(): Observable<Unit | null> { return this._unitClicked$.asObservable(); }
 

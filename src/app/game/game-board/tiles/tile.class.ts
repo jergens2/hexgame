@@ -55,6 +55,7 @@ export class Tile{
     public setPowerTile(): void { TileActionController.setPowerTile(this.tileState); }
     
     public evaluateProduction(): void{ TileProductionController.evaluateProduction(this); }
+    public changeProductionMode(mode: TileProductionMode): void { TileProductionController.changeProductionMode(this, mode); }
 
     constructor(hexagon: TileHexagon){
         this._hexagon = hexagon;
@@ -66,7 +67,8 @@ export class Tile{
             isSelected: false,
             productionRate: 0,
             accumulatedProduction: 0,
-            productionMode: TileProductionMode.BUILD_UNITS,
+            productionMode: TileProductionMode.PRODUCE_SOLDIERS,
+            resourcium: 0,
         };
     }
 }
